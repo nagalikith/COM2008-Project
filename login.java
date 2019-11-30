@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class login {
-	static FindDrivers connect = new FindDrivers();
 
 	public static void main(String[] args) throws SQLException, NoSuchAlgorithmException {
 		// TODO Auto-generated method stub
@@ -12,12 +11,27 @@ public class login {
 		System.out.print("Enter 1 to Login Enter 2 to Signup");
 		String choice = scanner.nextLine();
 		if (Integer.parseInt(choice) == 1) {
-
 			System.out.print("Enter email");
 			String email = scanner.nextLine();
 			System.out.print("Enter passowrd");
 			String password = scanner.nextLine();
-			loginExist(email, password);
+			System.out.print("Enter role");
+			String role = scanner.nextLine();
+			String queryCheck = "SELECT * FROM roles WHERE user = " + "\'" + email + "\'" + ";";
+			if (loginExist(email, password) && (DAC.checkRole(role,queryCheck) == false)){
+				String query = "SELECT * FROM user WHERE email = ?";
+				ArrayList<String> user = DAC.getUser(query, email);
+				Reviewers reviewer = new Reviewers(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4), user.get(5));
+				System.out.print("Enter 1 to view Articles Enter 2 to AddCoAuthor");
+				int choice1 = scanner.nextInt();
+				if (choice1 == 1) {
+					reviewer.selectArticleReview();
+				}else {
+					//author.registerCoAuthor();
+				}
+				
+			}
+			
 		} else if (Integer.parseInt(choice) == 2) {
 			System.out.print("Enter Title");
 			String title = scanner.nextLine();
@@ -34,11 +48,12 @@ public class login {
 			System.out.print("Enter Role");
 			String role = scanner.nextLine();
 			String query = "SELECT * FROM user WHERE email = " + "\'" + email + "\'" + ";";
-			if (connect.CheckEmail(query)) {
-				System.out.println("Invalid Email");
-			} else {
+			if (DAC.checkEmail(query)) {
 				loginNew(title, firstname, lastname, email, password, uni);
-				addrolls(role, email);
+				addroll(role, email);
+			} else {
+				System.out.println("Invalid Email");
+				
 			}
 		} else {
 			System.out.println("Wrong Choice");
@@ -47,26 +62,29 @@ public class login {
 		scanner.close();
 	}
 
-	private static void addrolls(String role, String email) throws SQLException {
+	static boolean addroll(String role, String email) throws SQLException {
 		// TODO Auto-generated method stub
 		String query = "INSERT INTO roles VALUES (?,?);";
 		String queryCheck = "SELECT * FROM roles WHERE user = " + "\'" + email + "\'" + ";";
-		if (connect.CheckRole(role, queryCheck) == false) {
+		if (DAC.checkRole(role, queryCheck) == false) {
 			System.out.println("Role already selected");
+			return false;
 		} else {
-			connect.addrolls(email, role, query);
+			DAC.addrolls(email, role, query);
+			return true;
 		}
 
 	}
 
-	public static void loginExist(String username, String passowrd) throws SQLException, NoSuchAlgorithmException {
+	public static boolean loginExist(String username, String passowrd) throws SQLException, NoSuchAlgorithmException {
 		String query = "SELECT * FROM user WHERE email = " + "\'" + username + "\'" + ";";
 		// ResultSet rs = connect.connection(query);
-		if (connect.CheckEmail(query)) {
+		if (DAC.checkEmail(query)) {
 			System.out.println("User Doesnt exist");
+			return false;
 		} else {
-			String pass = (passowrd);
-			connect.CheckUser(query, pass);
+			String pass = generateHash(passowrd);
+			return DAC.checkUser(query, pass);
 
 		}
 
@@ -83,7 +101,7 @@ public class login {
 		data.add(email);
 		data.add(pass);
 		data.add(uni);
-		connect.signUp(query, data);
+		DAC.signUp(query, data);
 
 	}
 
@@ -102,15 +120,6 @@ public class login {
 		}
 		return sb.toString();
 
-	}
-
-	public static byte[] toByteArray(String s) {
-		int len = s.length();
-		byte[] data = new byte[len / 2];
-		for (int i = 0; i < len; i += 2) {
-			data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
-		}
-		return data;
 	}
 
 }

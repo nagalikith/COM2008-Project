@@ -1,4 +1,4 @@
-package classesTest;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -8,23 +8,20 @@ public class DAC {
 
 	public void main(String[] args) throws Exception {
 	}
-	
 
-	public static void changePassword(String query, String password, String email) throws SQLException{
+	public static void changePassword(String query, String password, String email) throws SQLException {
 		connectionOpen();
-		
+
 		try {
 			PreparedStatement pstmt = con.prepareStatement(query);
 			pstmt.setString(1, password);
 			pstmt.setString(2, email);
 			pstmt.executeUpdate();
-			
+
 			pstmt.close();
-		}
-		catch(SQLException e) { 
+		} catch (SQLException e) {
 			System.out.println(e);
-		}
-		finally {
+		} finally {
 			connectionClose();
 		}
 	}
@@ -35,9 +32,9 @@ public class DAC {
 			PreparedStatement pstmt = con.prepareStatement(query);
 			pstmt.setString(1, email);
 			rs = pstmt.executeQuery();
-			
+
 			ArrayList<String> row = new ArrayList<String>();
-			
+
 			rs.next();
 			row.add(rs.getString("title"));
 			row.add(rs.getString("firstname"));
@@ -45,14 +42,12 @@ public class DAC {
 			row.add(rs.getString("email"));
 			row.add(rs.getString("password"));
 			row.add(rs.getString("uni"));
-            pstmt.close();
-			
+			pstmt.close();
+
 			return row;
-		}
-		catch(SQLException e) {
+		} catch (SQLException e) {
 			System.out.println(e);
-		}
-		finally {
+		} finally {
 			connectionClose();
 		}
 		return null;
@@ -60,9 +55,8 @@ public class DAC {
 
 	public static void connectionOpen() throws SQLException {
 		try {
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/testdb", "root", "sonal9999");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "teddy123");
 		} catch (SQLException ex) {
-			System.out.println("called through open");
 			connectionClose();
 		}
 	}
@@ -70,10 +64,8 @@ public class DAC {
 	public static void connectionClose() throws SQLException {
 
 		try {
-			System.out.println(con);
 			if (con != null) {
 				con.close();
-				System.out.println("closed");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -91,7 +83,6 @@ public class DAC {
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query);
 			if (rs.next() == false) {
-				System.out.println("Empty");
 				return true;
 			} else {
 				return false;
@@ -115,8 +106,6 @@ public class DAC {
 			rs = stmt.executeQuery(query);
 			rs.next();
 			String pass = rs.getString(5);
-			System.out.println("db   " + pass);
-			System.out.println("input" + password);
 			if (pass.compareTo(password) == 0) {
 				return true;
 			} else {
@@ -147,8 +136,7 @@ public class DAC {
 			pstmt.setString(4, data.get(3));
 			pstmt.setString(5, data.get(4));
 			pstmt.setString(6, data.get(5));
-			int rs = pstmt.executeUpdate();
-			System.out.println("Success" + rs);
+			pstmt.executeUpdate();
 		} catch (SQLException ex) {
 			System.out.println(ex);
 		} finally {
@@ -183,21 +171,21 @@ public class DAC {
 	public static boolean checkRole(String role, String query) throws SQLException {
 		connectionOpen();
 		Statement stmt = null;
-		String rolesFromDB = "";
 		try {
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query);
 			while (rs.next()) {
 				String role1 = rs.getString("role");
-				//rolesFromDB = rolesFromDB +" " +role1;
+				// rolesFromDB = rolesFromDB +" " +role1;
 				if (role1.compareTo(role) == 0) {
-					System.out.println("Role already exists");
 					return false;
 				}
 			}
 			return true;
 
-		} catch (SQLException ex) {
+		} catch (
+
+		SQLException ex) {
 			System.out.println(ex);
 		} finally {
 			if (stmt != null) {
@@ -207,4 +195,104 @@ public class DAC {
 		}
 		return false;
 	}
+
+	public static void publish(String query, ArrayList<String> publishData) throws SQLException {
+		connectionOpen();
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(query);
+			pstmt.setString(1, publishData.get(0));
+			pstmt.setString(2, publishData.get(1));
+			pstmt.setString(3, publishData.get(2));
+			pstmt.setString(4, publishData.get(3));
+			pstmt.executeUpdate();
+		} catch (SQLException ex) {
+			System.out.println(ex);
+		} finally {
+			if (pstmt != null) {
+				pstmt.close();
+				connectionClose();
+			}
+		}
+	}
+
+	public static ArrayList<ArrayList<String>> getArticle(String query, String email) throws SQLException {
+		// TODO Auto-generated method stub
+		connectionOpen();
+		ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
+		try {
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setString(1, email);
+			rs = pstmt.executeQuery();
+
+			ArrayList<String> row = new ArrayList<String>();
+
+			while (rs.next()) {
+				row = new ArrayList<String>();
+				row.add(rs.getString("id"));
+				row.add(rs.getString("title"));
+				row.add(rs.getString("abstract"));
+				row.add(rs.getString("email"));
+				row.add(rs.getString("mainauthor"));
+				row.add(rs.getString("status"));
+				rows.add(row);
+			}
+			pstmt.close();
+			return rows;
+		} catch (SQLException e) {
+			System.out.println(e);
+		} finally {
+			connectionClose();
+		}
+		return null;
+
+	}
+	
+	public static ArrayList<ArrayList<String>> getreview(String query, String email) throws SQLException {
+		// TODO Auto-generated method stub
+		connectionOpen();
+		ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
+		try {
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setString(1, email);
+			rs = pstmt.executeQuery();
+
+			ArrayList<String> row = new ArrayList<String>();
+
+			while (rs.next()) {
+				row = new ArrayList<String>();
+				row.add(rs.getString(1));
+				row.add(rs.getString(2));
+				row.add(rs.getString(3));
+				row.add(rs.getString(4));
+				rows.add(row);
+			}
+			pstmt.close();
+			return rows;
+		} catch (SQLException e) {
+			System.out.println(e);
+		} finally {
+			connectionClose();
+		}
+		return null;
+
+	}
+	
+	public static void insertReviewID(String query, String email) throws SQLException {
+		connectionOpen();
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(query);
+			pstmt.setString(1, email);
+			pstmt.executeUpdate();
+		} catch (SQLException ex) {
+			System.out.println(ex);
+		} finally {
+			if (pstmt != null) {
+				pstmt.close();
+				connectionClose();
+			}
+		}
+	}
+	
 }
