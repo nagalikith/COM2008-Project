@@ -6,15 +6,37 @@ import java.util.UUID;
 
 public class Author extends User {
 	Scanner scanner = new Scanner(System.in);
+	private String subid;
 
-	public Author(String t, String fn, String sn, String e, String p, String u) {
+	public Author(String t, String fn, String sn, String e, String p, String u) throws SQLException {
 		super(t, fn, sn, e, p, u);
 		// TODO Auto-generated constructor stub
+		String queryCheck = "SELECT * FROM submission WHERE email = ? AND status = 'Submission';";
+		ArrayList<ArrayList<String>> rows = DAC.getArticle(queryCheck, this.getEmail());
+		ArrayList<String> data = new ArrayList<String>();
+		if (rows.size() > 0) {
+
+			int count = 1;
+			for (ArrayList<String> list : rows) {
+				System.out.println(count + ": Title: " + list.get(1) + " Author " + list.get(3));
+				count ++ ;
+			}
+			
+			
+			System.out.println("Select Article of choice");
+			int choice = scanner.nextInt();
+			
+			data = (rows.get(choice - 1));
+			subid = data.get(0);
+		} else {
+			System.out.println("Empty");
+		}
 	}
 
 	public void submitArticle() throws SQLException, NoSuchAlgorithmException {
 		// one main author is in charge of submitting an article for consideration
 		// Must be replaced by GUI Text Fields.
+		scanner.nextLine();
 		System.out.print("Enter Title");
 		String title = scanner.nextLine();
 		System.out.print("Enter abstract");
@@ -30,10 +52,7 @@ public class Author extends User {
 		query = "INSERT INTO roles VALUES (?,?);";
 		DAC.addrolls(getEmail(), "editor", query);
 	}
-
-	public void submitRevisedArticle() {
-	}
-
+	
 	public void registerCoAuthor() throws NoSuchAlgorithmException, SQLException {
 		// and by submitting,
 		// they self-register as an author and register all the co-authors of the
@@ -86,6 +105,22 @@ public class Author extends User {
 		}
 
 	}
+	
+	public void submitRevisedArticle() throws SQLException {
+		scanner.nextLine();
+		System.out.print("Enter Title");
+		String title = scanner.nextLine();
+		scanner.nextLine();
+		System.out.print("Enter abstract");
+		String abst = scanner.nextLine();
+		String query = "INSERT INTO submission VALUES (?,?,?,?,TRUE,'Revised');";
+		ArrayList<String> data = new ArrayList<String>();
+		data.add(subid);
+		data.add(title);
+		data.add(abst);
+		data.add(this.getEmail());
+		DAC.publish(query, data);
+	}
 
 	public void trackStatusArticle() {
 		// all authors may log in to track the status of their submitted article, until
@@ -103,6 +138,7 @@ public class Author extends User {
 	}
 
 	public void checkInitialVerdict() {
+		String queryCheck = "SELECT * FROM review WHERE subid = \'"+ subid + "\' ;";
 
 	}
 
@@ -110,11 +146,27 @@ public class Author extends User {
 
 	}
 
-	public void checkInitialArticle() {
+	public boolean checkInitialArticle() throws SQLException {
+		String queryCheck = "SELECT * FROM submission WHERE id = ? AND status = 'Submission' ;";
+		ArrayList<ArrayList<String>> rows = DAC.getArticle(queryCheck, subid);
+		if (rows.size() == 0) {
+			return false;
+		} else {
+			System.out.println(rows);
+			return true;
+		}
 
 	}
 
-	public void checkFinalArticle() {
+	public boolean checkFinalArticle() throws SQLException {
+		String queryCheck = "SELECT * FROM submission WHERE id = ? AND status = 'Revised' ;";
+		ArrayList<ArrayList<String>> rows = DAC.getArticle(queryCheck, subid);
+		if (rows.size() == 0) {
+			return false;
+		} else {
+			System.out.println(rows);
+			return true;
+		}
 
 	}
 
@@ -124,12 +176,14 @@ public class Author extends User {
 
 	public void respondToReviews() {
 		// make an oblect of class response
-
 		// one main author is responsible for responding to the criticisms expressed in
 		// the reviews and
 		// for submitting the revised article, along with a response to each reviewer;
 		// each response must include a list of answers to each of that reviewer’s
 		// questions, where the
 		// review contained a list of questions (or criticisms).
+		
+		
+		
 	}
 }

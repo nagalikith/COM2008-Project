@@ -248,13 +248,12 @@ public class DAC {
 
 	}
 	
-	public static ArrayList<ArrayList<String>> getreview(String query, String email) throws SQLException {
+	public static ArrayList<ArrayList<String>> getreview(String query) throws SQLException {
 		// TODO Auto-generated method stub
 		connectionOpen();
 		ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
 		try {
 			PreparedStatement pstmt = con.prepareStatement(query);
-			pstmt.setString(1, email);
 			rs = pstmt.executeQuery();
 
 			ArrayList<String> row = new ArrayList<String>();
@@ -265,6 +264,8 @@ public class DAC {
 				row.add(rs.getString(2));
 				row.add(rs.getString(3));
 				row.add(rs.getString(4));
+				row.add(rs.getString(5));
+				row.add(rs.getString(7));
 				rows.add(row);
 			}
 			pstmt.close();
@@ -278,12 +279,13 @@ public class DAC {
 
 	}
 	
-	public static void insertReviewID(String query, String email) throws SQLException {
+	public static void insertReviewID(String query, String email , String subid) throws SQLException {
 		connectionOpen();
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(query);
 			pstmt.setString(1, email);
+			pstmt.setString(2, subid);
 			pstmt.executeUpdate();
 		} catch (SQLException ex) {
 			System.out.println(ex);
@@ -293,6 +295,80 @@ public class DAC {
 				connectionClose();
 			}
 		}
+	}
+
+	public static void adderror(String query, ArrayList<String> errors, String revid , String subid, String role) throws SQLException {
+		// TODO Auto-generated method stub
+		connectionOpen();
+		PreparedStatement pstmt = null;
+		try {
+			int count = 1;
+			for (String error : errors) {
+				pstmt = con.prepareStatement(query);
+				pstmt.setString(1, revid);
+				pstmt.setString(2, subid);
+				pstmt.setString(3, error);
+				pstmt.setInt(4, count);
+				pstmt.setString(5, role);
+				pstmt.executeUpdate();
+				count ++ ;
+			}
+		} catch (SQLException ex) {
+			System.out.println(ex);
+		} finally {
+			if (pstmt != null) {
+				pstmt.close();
+				connectionClose();
+			}
+		}
+		
+	}
+
+	public static void addinitialsub(String query, String sum, String typo, String judgement ,String status, String subid) throws SQLException {
+		// TODO Auto-generated method stub
+		connectionOpen();
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(query);
+			pstmt.setString(1, sum);
+			pstmt.setString(2, typo);
+			pstmt.setString(3, judgement);
+			pstmt.setString(4, status);
+			pstmt.setString(5, subid);
+			pstmt.executeUpdate();
+		} catch (SQLException ex) {
+			System.out.println(ex);
+		} finally {
+			if (pstmt != null) {
+				pstmt.close();
+				connectionClose();
+			}
+		}
+		
+	}
+	
+	public static void addFinalSub(String query, String revid,String subid, String sum , String typo, String judgement ,String status) throws SQLException {
+		// TODO Auto-generated method stub
+		connectionOpen();
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(query);
+			pstmt.setString(1, revid);
+			pstmt.setString(2, subid);
+			pstmt.setString(3, sum);
+			pstmt.setString(4, typo);
+			pstmt.setString(5, judgement);
+			pstmt.setString(6, status);
+			pstmt.executeUpdate();
+		} catch (SQLException ex) {
+			System.out.println(ex);
+		} finally {
+			if (pstmt != null) {
+				pstmt.close();
+				connectionClose();
+			}
+		}
+		
 	}
 	
 }
