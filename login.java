@@ -17,31 +17,32 @@ public class login {
 			String password = scanner.nextLine();
 			System.out.print("Enter role");
 			String role = scanner.nextLine();
-			
+
 			String queryCheck = "SELECT * FROM roles WHERE user = " + "\'" + email + "\'" + ";";
-			if (loginExist(email, password) && (DAC.checkRole(role,queryCheck) == false)){
+			if (loginExist(email, password) && (DAC.checkRole(role, queryCheck) == false)) {
 				String query = "SELECT * FROM user WHERE email = ?";
 				ArrayList<String> user = DAC.getUser(query, email);
-				//Reviewers reviewer = new Reviewers(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4), user.get(5));
-				Author author = new Author(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4), user.get(5));
+				Reviewers reviewer = new Reviewers(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4),
+						user.get(5));
+				Author author = new Author(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4),
+						user.get(5));
 				System.out.print("Enter 1 to view Articles Enter 2 to AddCoAuthor");
 				int choice1 = scanner.nextInt();
 				scanner.nextLine();
 				if (choice1 == 1) {
-					//reviewer.viewArticle();
-					//reviewer.submitInitialVerdict("Initial");
+					reviewer.viewArticle();
+					reviewer.submitInitialVerdict("Initial");
 					//reviewer.submitFinalVerdict();
-					author.submitArticle();
-					author.registerCoAuthor();
-					//author.submitRevisedArticle();
+					//author.submitArticle();
+					// author.submitRevisedArticle();
 					System.out.println(author.checkInitialArticle());
 					System.out.println(author.checkFinalArticle());
-				}else {
-					//author.registerCoAuthor();
+				} else {
+					// author.registerCoAuthor();
 				}
-				
+
 			}
-			
+
 		} else if (Integer.parseInt(choice) == 2) {
 			System.out.print("Enter Title");
 			String title = scanner.nextLine();
@@ -63,7 +64,7 @@ public class login {
 				addroll(role, email);
 			} else {
 				System.out.println("Invalid Email");
-				
+
 			}
 		} else {
 			System.out.println("Wrong Choice");

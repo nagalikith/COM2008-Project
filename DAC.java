@@ -109,7 +109,7 @@ public class DAC {
 			if (pass.compareTo(password) == 0) {
 				return true;
 			} else {
-				System.out.println("Wrong Password");
+				//System.out.println("Wrong Password");
 				return false;
 			}
 
@@ -156,7 +156,6 @@ public class DAC {
 			pstmt.setString(1, email);
 			pstmt.setString(2, role);
 			int rs = pstmt.executeUpdate();
-			System.out.println("Success" + rs);
 		} catch (SQLException ex) {
 			System.out.println(ex);
 		} finally {
@@ -247,7 +246,7 @@ public class DAC {
 		return null;
 
 	}
-	
+
 	public static ArrayList<ArrayList<String>> getreview(String query) throws SQLException {
 		// TODO Auto-generated method stub
 		connectionOpen();
@@ -278,8 +277,8 @@ public class DAC {
 		return null;
 
 	}
-	
-	public static void insertReviewID(String query, String email , String subid) throws SQLException {
+
+	public static void insertReviewID(String query, String email, String subid) throws SQLException {
 		connectionOpen();
 		PreparedStatement pstmt = null;
 		try {
@@ -297,7 +296,8 @@ public class DAC {
 		}
 	}
 
-	public static void adderror(String query, ArrayList<String> errors, String revid , String subid, String role) throws SQLException {
+	public static void adderror(String query, ArrayList<String> errors, String revid, String subid, String role)
+			throws SQLException {
 		// TODO Auto-generated method stub
 		connectionOpen();
 		PreparedStatement pstmt = null;
@@ -311,7 +311,7 @@ public class DAC {
 				pstmt.setInt(4, count);
 				pstmt.setString(5, role);
 				pstmt.executeUpdate();
-				count ++ ;
+				count++;
 			}
 		} catch (SQLException ex) {
 			System.out.println(ex);
@@ -321,10 +321,11 @@ public class DAC {
 				connectionClose();
 			}
 		}
-		
+
 	}
 
-	public static void addinitialsub(String query, String sum, String typo, String judgement ,String status, String subid) throws SQLException {
+	public static void addinitialsub(String query, String sum, String typo, String judgement, String status,
+			String subid) throws SQLException {
 		// TODO Auto-generated method stub
 		connectionOpen();
 		PreparedStatement pstmt = null;
@@ -344,10 +345,11 @@ public class DAC {
 				connectionClose();
 			}
 		}
-		
+
 	}
-	
-	public static void addFinalSub(String query, String revid,String subid, String sum , String typo, String judgement ,String status) throws SQLException {
+
+	public static void addFinalSub(String query, String revid, String subid, String sum, String typo, String judgement,
+			String status) throws SQLException {
 		// TODO Auto-generated method stub
 		connectionOpen();
 		PreparedStatement pstmt = null;
@@ -368,7 +370,7 @@ public class DAC {
 				connectionClose();
 			}
 		}
-		
+
 	}
-	
+
 }
