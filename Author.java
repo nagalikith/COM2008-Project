@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class Author extends User {
 	Scanner scanner = new Scanner(System.in);
-	private String subid;
+	private static String subid;
 
 	public Author(String t, String fn, String sn, String e, String p, String u) throws SQLException {
 		super(t, fn, sn, e, p, u);
@@ -96,7 +96,7 @@ public class Author extends User {
 
 	}
 	
-	public String articleTitle() throws SQLException {
+	public static String articleTitle() throws SQLException {
 		String queryCheck = "SELECT * FROM review WHERE subid = \'" + subid + "\' AND status = 'Submission' ;";
 		ArrayList<ArrayList<String>> rows = DAC.getreview(queryCheck);
 		return rows.get(0).get(1);

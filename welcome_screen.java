@@ -134,13 +134,19 @@ public class welcome_screen extends JFrame {
 					if (loginExist(email, password) && (DAC.checkRole(role, queryCheck) == false)) {
 						String query = "SELECT * FROM user WHERE email = ?";
 						ArrayList<String> user = DAC.getUser(query, email);
-						Reviewers reviewer = new Reviewers(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4),
-								user.get(5));
-						Author author = new Author(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4),
-								user.get(5));
-						JOptionPane.showMessageDialog(null, "Login Confirmed");
-						gui_author gauthor = new gui_author(author);
-						gauthor.main(null);
+						if (role == "Reviewer") {
+							Reviewers reviewer = new Reviewers(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4),
+									user.get(5));
+							JOptionPane.showMessageDialog(null, "Welcome: "+reviewer.getFirstName().toUpperCase());
+							gui_Reviewe greviewer = new gui_Reviewe(reviewer);
+							greviewer.main(null);
+						} else {
+							Author author = new Author(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4),
+									user.get(5));
+							JOptionPane.showMessageDialog(null, "Welcome: "+author.getFirstName().toUpperCase());
+							gui_author gauthor = new gui_author(author);
+							gauthor.main(null);
+						}
 					} else {
 						JOptionPane.showMessageDialog(null, "Login failed");
 					}
