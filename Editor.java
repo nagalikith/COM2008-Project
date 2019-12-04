@@ -9,6 +9,7 @@ public class Editor extends User {
 
 	//private boolean chiefEditor;
 	//private static Connection con;
+	private static String journal;
 	
 	public Editor(String t, String fn, String sn, String e, String p, String u) {
 		super(t, fn, sn, e, p, u);
@@ -39,7 +40,7 @@ public class Editor extends User {
 	}
 	
 	
-	public static void loggedIn(String email) throws NoSuchAlgorithmException, SQLException {
+	public static void selectJournal(String email,String journalInput) throws NoSuchAlgorithmException, SQLException {
 		Scanner sc = new Scanner(System.in);
 		
 		ArrayList<String> journalList = getJournalList(email);
@@ -47,38 +48,39 @@ public class Editor extends User {
         System.out.print("choose one journal to take actions ");
         System.out.println(journalList.toString());
         
-		System.out.print("Enter Journal Name");
-		String journal = sc.nextLine();
+		//System.out.print("Enter Journal Name");
+		//String journal = sc.nextLine();
 		
-		if (journalList.contains(journal) == false)
+		if (journalList.contains(journalInput) == false)
 		{
 			System.out.println("not valid journal");
-			sc.close();
+
 		}
 		else {
-			register(false,journal);
+			journal = journalInput;
 		}
 		sc.close();
 		
 	}
 	
-	public static void register(boolean chiefEditor, String journal) throws NoSuchAlgorithmException, SQLException {
+	public static void register(String title, String firstname, String lastname, String email, String uni) throws NoSuchAlgorithmException, SQLException {
 		
 		Scanner scanner = new Scanner(System.in);
 		
-		System.out.println("Enter Title");
-		String title = scanner.nextLine();
-		System.out.println("Enter firstname");
-		String firstname = scanner.nextLine();
-		System.out.println("Enter lastname");
-		String lastname = scanner.nextLine();
-		System.out.println("Enter email");
-		String email = scanner.nextLine();
-		System.out.println("Enter passowrd");
-		String password = scanner.nextLine();
-		System.out.println("Enter Uni");
-		String uni = scanner.nextLine();
-		//String role = "editor";
+		//System.out.println("Enter Title");
+		//String title = scanner.nextLine();
+		//System.out.println("Enter firstname");
+		//String firstname = scanner.nextLine();
+		//System.out.println("Enter lastname");
+		//String lastname = scanner.nextLine();
+		//System.out.println("Enter email");
+		//String email = scanner.nextLine();
+		//System.out.println("Enter passowrd");
+		//String password = scanner.nextLine();
+		//System.out.println("Enter Uni");
+		//String uni = scanner.nextLine();
+		String password = "pass";
+		boolean chiefEditor = false;
 		
 		//email = "\'" + email + "\'" ; // 'email'
 		//journal = "\'" + journal + "\'"; 
@@ -127,7 +129,7 @@ public class Editor extends User {
 
 	}
 	
-	public static void passRole(String email) throws SQLException {
+	public static void passRole(String email, String journalInput) throws SQLException {
 		//pass role of chief editor to different editor
 		Scanner sc = new Scanner(System.in);
 		
@@ -136,8 +138,8 @@ public class Editor extends User {
         System.out.print("choose one journal to take actions ");
         System.out.println(journalList.toString());
         
-		System.out.print("Enter Journal Name");
-		String journal = sc.nextLine();
+		//System.out.print("Enter Journal Name");
+		//String journal = sc.nextLine();
 		
 		DAC.connectionOpen();
 		
@@ -146,7 +148,7 @@ public class Editor extends User {
 		
 		try {
 			PreparedStatement pstmt = DAC.getCon().prepareStatement(getEditors);
-			pstmt.setString(1, journal);
+			pstmt.setString(1, journalInput);
 			ResultSet rs = pstmt.executeQuery();
 			
 			while(rs.next()) {
@@ -164,13 +166,13 @@ public class Editor extends User {
 			String queryOne = "UPDATE editor SET chiefeditor = true WHERE email = ? AND journal = ?";
 			PreparedStatement pstmt2 = DAC.getCon().prepareStatement(queryOne);
 			pstmt2.setString(1, emailnew);
-			pstmt2.setString(2, journal);
+			pstmt2.setString(2, journalInput);
 			pstmt2.executeUpdate();
 			
 			String queryTwo = "UPDATE editor SET chiefeditor = false WHERE email = ? AND journal = ?";
 			PreparedStatement pstmt3 = DAC.getCon().prepareStatement(queryTwo);
 			pstmt3.setString(1, email);
-			pstmt3.setString(2, journal);
+			pstmt3.setString(2, journalInput);
 			pstmt3.executeUpdate();
 			}
 			
@@ -185,7 +187,7 @@ public class Editor extends User {
 		
 	}
 	
-	public static void retire(String email) throws SQLException {
+	public static void retire(String email, String journalInput) throws SQLException {
 		//an editor may retire (possibly temporarily, to avoid a conflict of interest) from the board for
 		//a journal, so long as at least one chief editor remains on the board;
 		Scanner sc = new Scanner(System.in);
@@ -195,8 +197,8 @@ public class Editor extends User {
         System.out.print("choose one journal to take actions ");
         System.out.println(journalList.toString());
         
-		System.out.print("Enter Journal Name");
-		String journal = sc.nextLine();
+		//System.out.print("Enter Journal Name");
+		//String journal= sc.nextLine();
 		
 		sc.close();
 		
@@ -205,7 +207,7 @@ public class Editor extends User {
 		DAC.connectionOpen();
 		try {
 			PreparedStatement pstmt = DAC.getCon().prepareStatement(queryCount);
-			pstmt.setString(1, journal);
+			pstmt.setString(1, journalInput);
 			ResultSet rs = pstmt.executeQuery();
 			
 			rs.next();
@@ -216,7 +218,7 @@ public class Editor extends User {
 				String queryCheck = "SELECT chiefeditor FROM editor WHERE email = ? AND journal = ?";
 				PreparedStatement pstmt4 = DAC.getCon().prepareStatement(queryCheck);
 				pstmt4.setString(1, email);
-				pstmt4.setString(2, journal);
+				pstmt4.setString(2, journalInput);
 				ResultSet rs4 = pstmt4.executeQuery();
 				rs4.next();
 				boolean chief = rs4.getBoolean(1);
@@ -225,14 +227,14 @@ public class Editor extends User {
 				String queryDel = "DELETE FROM editor WHERE email = ? AND journal = ?";
 				PreparedStatement pstmt1 = DAC.getCon().prepareStatement(queryDel);
 				pstmt1.setString(1, email);
-				pstmt1.setString(2, journal);
+				pstmt1.setString(2, journalInput);
 				pstmt1.executeUpdate();
 				
 				if(chief) {
 				//make the next person chief editor
 				String makeNext = "SELECT * FROM editor WHERE journal = ?";
 				PreparedStatement pstmt2 = DAC.getCon().prepareStatement(makeNext);
-				pstmt2.setString(1, journal);
+				pstmt2.setString(1, journalInput);
 				ResultSet rs2 = pstmt2.executeQuery();
 				rs2.next();
 				String nameNewChief = rs2.getString("email");
@@ -240,7 +242,7 @@ public class Editor extends User {
 				String update = "UPDATE editor SET chiefeditor = true WHERE email = ? AND journal = ?";
 				PreparedStatement pstmt3 = DAC.getCon().prepareStatement(update);
 				pstmt3.setString(1, nameNewChief);
-				pstmt3.setString(2, journal);
+				pstmt3.setString(2, journalInput);
 				pstmt3.executeUpdate();
 				
 				System.out.println("deleted made new cheif");

@@ -81,11 +81,3 @@ public class User {
 	}
 	
 }
-
-	
-	public void getFromDB() {
-		String query = "SELECT * FROM user WHERE email = ?";
-		String email = this.email;
-	}
-	
-}
