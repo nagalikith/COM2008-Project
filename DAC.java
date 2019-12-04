@@ -1,6 +1,9 @@
 
+
+import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
+
 
 public class DAC {
 	private static Connection con;
@@ -109,7 +112,7 @@ public class DAC {
 			if (pass.compareTo(password) == 0) {
 				return true;
 			} else {
-				//System.out.println("Wrong Password");
+				// System.out.println("Wrong Password");
 				return false;
 			}
 
@@ -195,15 +198,20 @@ public class DAC {
 		return false;
 	}
 
-	public static void publish(String query, ArrayList<String> publishData) throws SQLException {
+	public static void publish(String query, ArrayList<String> publishData) throws SQLException, FileNotFoundException {
 		connectionOpen();
 		PreparedStatement pstmt = null;
 		try {
+
+			File file = new File(publishData.get(4));
+			FileInputStream input = new FileInputStream(file);
+
 			pstmt = con.prepareStatement(query);
 			pstmt.setString(1, publishData.get(0));
 			pstmt.setString(2, publishData.get(1));
 			pstmt.setString(3, publishData.get(2));
 			pstmt.setString(4, publishData.get(3));
+			pstmt.setBinaryStream(5, input);
 			pstmt.executeUpdate();
 		} catch (SQLException ex) {
 			System.out.println(ex);
@@ -264,7 +272,7 @@ public class DAC {
 				row.add(rs.getString(3));
 				row.add(rs.getString(4));
 				row.add(rs.getString(5));
-				row.add(rs.getString(7));
+				row.add(rs.getString(6));
 				rows.add(row);
 			}
 			pstmt.close();
@@ -296,7 +304,7 @@ public class DAC {
 		}
 	}
 
-	public static void adderror(String query, ArrayList<String> errors, String revid, String subid, String role)
+	public static void adderror(String query,String revid, String subid, ArrayList<String> errors, String role)
 			throws SQLException {
 		// TODO Auto-generated method stub
 		connectionOpen();
@@ -371,6 +379,35 @@ public class DAC {
 			}
 		}
 
+	}
+
+	public static void getpdf(String query, String subid) throws SQLException, IOException {
+		// TODO Auto-generated method stub
+		connectionOpen();
+		try {
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setString(1, subid);
+			rs = pstmt.executeQuery();
+
+			File file = new File("DOWNLOADED.pdf");
+			FileOutputStream output = new FileOutputStream(file);
+			
+			System.out.println("Writing to file " + file.getAbsolutePath());
+			
+			while (rs.next()) {
+				InputStream input = rs.getBinaryStream("pdf");
+				byte[] buffer = new byte[1024];
+				while (input.read(buffer) > 0) {
+					output.write(buffer);
+				}
+			}
+			pstmt.close();
+		} catch (SQLException e) {
+			System.out.println(e);
+		} finally {
+			connectionClose();
+			
+		}
 	}
 
 }
