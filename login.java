@@ -30,13 +30,13 @@ public class login {
 				int choice1 = scanner.nextInt();
 				scanner.nextLine();
 				if (choice1 == 1) {
-					reviewer.viewArticle();
-					reviewer.submitInitialVerdict("Initial");
+					//reviewer.viewArticle();
+					//reviewer.submitInitialVerdict("Initial");
 					//reviewer.submitFinalVerdict();
 					//author.submitArticle();
 					// author.submitRevisedArticle();
-					System.out.println(author.checkInitialArticle());
-					System.out.println(author.checkFinalArticle());
+					//System.out.println(author.checkInitialArticle());
+					//System.out.println(author.checkFinalArticle());
 				} else {
 					// author.registerCoAuthor();
 				}
