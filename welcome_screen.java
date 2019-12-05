@@ -135,17 +135,19 @@ public class welcome_screen extends JFrame {
 						String query = "SELECT * FROM user WHERE email = ?";
 						ArrayList<String> user = DAC.getUser(query, email);
 						if (role == "Reviewer") {
-							Reviewers reviewer = new Reviewers(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4),
-									user.get(5));
-							JOptionPane.showMessageDialog(null, "Welcome: "+reviewer.getFirstName().toUpperCase());
+							Reviewers reviewer = new Reviewers(user.get(0), user.get(1), user.get(2), user.get(3),
+									user.get(4), user.get(5));
+							JOptionPane.showMessageDialog(null, "Welcome: " + reviewer.getFirstName().toUpperCase());
 							gui_Reviewe greviewer = new gui_Reviewe(reviewer);
 							greviewer.main(null);
+							dispose();
 						} else {
 							Author author = new Author(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4),
 									user.get(5));
-							JOptionPane.showMessageDialog(null, "Welcome: "+author.getFirstName().toUpperCase());
+							JOptionPane.showMessageDialog(null, "Welcome: " + author.getFirstName().toUpperCase());
 							gui_author gauthor = new gui_author(author);
 							gauthor.main(null);
+							dispose();
 						}
 					} else {
 						JOptionPane.showMessageDialog(null, "Login failed");
@@ -154,7 +156,7 @@ public class welcome_screen extends JFrame {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
+
 				email_signin.setText(null);
 				passwordField_signin.setText(null);
 
@@ -173,61 +175,61 @@ public class welcome_screen extends JFrame {
 		lblSignUp.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSignUp.setBounds(148, 38, 122, 33);
 		panel_1.add(lblSignUp);
-		
-				JSeparator separator_2 = new JSeparator();
-				separator_2.setBounds(10, 69, 379, 2);
-				panel_1.add(separator_2);
+
+		JSeparator separator_2 = new JSeparator();
+		separator_2.setBounds(10, 69, 379, 2);
+		panel_1.add(separator_2);
 
 		JLabel lblTitle = new JLabel("Title");
 		lblTitle.setBounds(10, 95, 41, 33);
 		panel_1.add(lblTitle);
-		
-				textField_title = new JTextField();
-				textField_title.setColumns(10);
-				textField_title.setBounds(51, 95, 122, 33);
-				panel_1.add(textField_title);
+
+		textField_title = new JTextField();
+		textField_title.setColumns(10);
+		textField_title.setBounds(51, 95, 122, 33);
+		panel_1.add(textField_title);
 
 		JLabel lblFirstName = new JLabel("First name");
 		lblFirstName.setBounds(183, 89, 62, 33);
 		panel_1.add(lblFirstName);
-		
-				textField_firstname = new JTextField();
-				textField_firstname.setColumns(10);
-				textField_firstname.setBounds(255, 95, 122, 33);
-				panel_1.add(textField_firstname);
+
+		textField_firstname = new JTextField();
+		textField_firstname.setColumns(10);
+		textField_firstname.setBounds(255, 95, 122, 33);
+		panel_1.add(textField_firstname);
 
 		JLabel lblLastName = new JLabel("Uni");
 		lblLastName.setBounds(10, 133, 41, 33);
 		panel_1.add(lblLastName);
-		
-				textField_uni = new JTextField();
-				textField_uni.setColumns(10);
-				textField_uni.setBounds(51, 139, 122, 33);
-				panel_1.add(textField_uni);
+
+		textField_uni = new JTextField();
+		textField_uni.setColumns(10);
+		textField_uni.setBounds(51, 139, 122, 33);
+		panel_1.add(textField_uni);
 
 		JLabel lblSurName = new JLabel("Last name");
 		lblSurName.setBounds(183, 133, 62, 33);
 		panel_1.add(lblSurName);
-		
-				textField_lastname = new JTextField();
-				textField_lastname.setColumns(10);
-				textField_lastname.setBounds(255, 139, 122, 33);
-				panel_1.add(textField_lastname);
+
+		textField_lastname = new JTextField();
+		textField_lastname.setColumns(10);
+		textField_lastname.setBounds(255, 139, 122, 33);
+		panel_1.add(textField_lastname);
 
 		JLabel label_5 = new JLabel("Email");
 		label_5.setBounds(10, 177, 41, 33);
 		panel_1.add(label_5);
-		
-				textField_email_signup = new JTextField();
-				textField_email_signup.setColumns(10);
-				textField_email_signup.setBounds(51, 183, 122, 33);
-				panel_1.add(textField_email_signup);
+
+		textField_email_signup = new JTextField();
+		textField_email_signup.setColumns(10);
+		textField_email_signup.setBounds(51, 183, 122, 33);
+		panel_1.add(textField_email_signup);
 
 		JLabel label_6 = new JLabel("Password");
 		label_6.setHorizontalAlignment(SwingConstants.LEFT);
 		label_6.setBounds(183, 177, 62, 33);
 		panel_1.add(label_6);
-		
+
 		passwordField_signup = new JPasswordField();
 		passwordField_signup.setBounds(255, 183, 122, 27);
 		panel_1.add(passwordField_signup);
@@ -241,10 +243,10 @@ public class welcome_screen extends JFrame {
 		comboBox_1.setModel(new DefaultComboBoxModel(new String[] { "Author", "Editor" }));
 		comboBox_1.setBounds(171, 221, 122, 33);
 		panel_1.add(comboBox_1);
-		
-				JSeparator separator_3 = new JSeparator();
-				separator_3.setBounds(10, 279, 379, 2);
-				panel_1.add(separator_3);
+
+		JSeparator separator_3 = new JSeparator();
+		separator_3.setBounds(10, 279, 379, 2);
+		panel_1.add(separator_3);
 
 		JButton btnSignUp = new JButton("Sign Up\r\n");
 		btnSignUp.addActionListener(new ActionListener() {
@@ -256,15 +258,14 @@ public class welcome_screen extends JFrame {
 				String password = passwordField_signup.getText();
 				String uni = textField_uni.getText();
 				String role = (String) comboBox_1.getItemAt(comboBox_1.getSelectedIndex());
-				String query = "SELECT * FROM user WHERE email = " + "\'" + email + "\'" + ";";
+				String query = "SELECT * FROM user WHERE email = ? ;";
 				try {
-					if (DAC.checkEmail(query)) {
+					if (DAC.checkEmail(query , email)) {
 						loginNew(title, firstname, lastname, email, password, uni);
 						addroll(role, email);
 					} else {
-						//System.out.println("Invalid Email");
+						// System.out.println("Invalid Email");
 						JOptionPane.showMessageDialog(null, "Invalid Email");
-
 					}
 				} catch (NoSuchAlgorithmException | SQLException e1) {
 					// TODO Auto-generated catch block
@@ -276,20 +277,19 @@ public class welcome_screen extends JFrame {
 				textField_uni.setText(null);
 				textField_email_signup.setText(null);
 				passwordField_signup.setText(null);
-				
+
 			}
 		});
 		btnSignUp.setBounds(148, 300, 122, 33);
 		panel_1.add(btnSignUp);
 	}
-	
 
 	static boolean addroll(String role, String email) throws SQLException {
 		// TODO Auto-generated method stub
 		String query = "INSERT INTO roles VALUES (?,?);";
 		String queryCheck = "SELECT * FROM roles WHERE user = " + "\'" + email + "\'" + ";";
 		if (DAC.checkRole(role, queryCheck) == false) {
-			//System.out.println("Role already selected");
+			// System.out.println("Role already selected");
 			JOptionPane.showMessageDialog(null, "Role already selected");
 			return false;
 		} else {
@@ -300,15 +300,15 @@ public class welcome_screen extends JFrame {
 	}
 
 	public static boolean loginExist(String username, String passowrd) throws SQLException, NoSuchAlgorithmException {
-		String query = "SELECT * FROM user WHERE email = " + "\'" + username + "\'" + ";";
+		String query = "SELECT * FROM user WHERE email = ? ;";
 		// ResultSet rs = connect.connection(query);
-		if (DAC.checkEmail(query)) {
-			//System.out.println("User Doesnt exist");
+		if (DAC.checkEmail(query, username)) {
+			// System.out.println("User Doesnt exist");
 			JOptionPane.showMessageDialog(null, "User Does not exist");
 			return false;
 		} else {
 			String pass = generateHash(passowrd);
-			boolean check = DAC.checkUser(query, pass);
+			boolean check = DAC.checkUser(query, username ,pass);
 			if (check == false) {
 				JOptionPane.showMessageDialog(null, "Wrong Password");
 			}
@@ -349,5 +349,5 @@ public class welcome_screen extends JFrame {
 		return sb.toString();
 
 	}
-	
+
 }

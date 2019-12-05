@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.HeadlessException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -36,7 +37,7 @@ public class gui_Reviewe extends JFrame {
 	private static Reviewers reviewer;
 	private ArrayList<ArrayList<String>> data = new ArrayList<ArrayList<String>>();
 	private JLayeredPane layeredPane;
-	private boolean check = true;
+	private boolean check = false;
 
 	/**
 	 * Launch the application.
@@ -84,6 +85,8 @@ public class gui_Reviewe extends JFrame {
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setBounds(10, 11, 183, 36);
 		panel.add(label);
+		
+		label.setText(reviewer.getFirstName());
 
 		JLabel lblReviewer = new JLabel("REVIEWER");
 		lblReviewer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -91,6 +94,12 @@ public class gui_Reviewe extends JFrame {
 		panel.add(lblReviewer);
 
 		JButton button = new JButton("Log Out");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				welcome_screen.main(null);
+				dispose();
+			}
+		});
 		button.setBounds(40, 323, 122, 36);
 		panel.add(button);
 
@@ -112,11 +121,11 @@ public class gui_Reviewe extends JFrame {
 		layeredPane.setBounds(192, 0, 512, 376);
 		panel.add(layeredPane);
 		layeredPane.setLayout(new CardLayout(0, 0));
-		
+
 		JPanel panel_welcome = new JPanel();
 		layeredPane.add(panel_welcome, "name_1785457208702400");
 		panel_welcome.setLayout(null);
-		
+
 		JLabel lblNewLabel_3 = new JLabel("WELCOME");
 		lblNewLabel_3.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_3.setBounds(115, 101, 264, 64);
@@ -151,11 +160,11 @@ public class gui_Reviewe extends JFrame {
 		JTextArea textArea_typoI = new JTextArea();
 		scrollPane_1.setViewportView(textArea_typoI);
 
-		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(
+		JComboBox comboBox_I = new JComboBox();
+		comboBox_I.setModel(new DefaultComboBoxModel(
 				new String[] { "Strong Accept", "Weak Accept", "Weak Reject", "Strong Reject" }));
-		comboBox.setBounds(0, 333, 243, 32);
-		panel_initial.add(comboBox);
+		comboBox_I.setBounds(0, 333, 243, 32);
+		panel_initial.add(comboBox_I);
 
 		JLabel lblJudgement = new JLabel("Verdict");
 		lblJudgement.setHorizontalAlignment(SwingConstants.CENTER);
@@ -196,24 +205,16 @@ public class gui_Reviewe extends JFrame {
 		JTextArea textArea_typoF = new JTextArea();
 		scrollPane_3.setViewportView(textArea_typoF);
 
-		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setModel(new DefaultComboBoxModel(
+		JComboBox comboBox_F = new JComboBox();
+		comboBox_F.setModel(new DefaultComboBoxModel(
 				new String[] { "Strong Accept", "Weak Accept", "Weak Reject", "Strong Reject" }));
-		comboBox_1.setBounds(106, 255, 243, 32);
-		panel_final.add(comboBox_1);
+		comboBox_F.setBounds(106, 255, 243, 32);
+		panel_final.add(comboBox_F);
 
 		JLabel lblVerdict = new JLabel("Verdict");
 		lblVerdict.setHorizontalAlignment(SwingConstants.CENTER);
 		lblVerdict.setBounds(0, 255, 96, 32);
 		panel_final.add(lblVerdict);
-
-		JButton button_3 = new JButton("Submit");
-		button_3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		button_3.setBounds(168, 327, 132, 38);
-		panel_final.add(button_3);
 
 		JLabel lblFinalReview = new JLabel("FINAL REVIEW");
 		lblFinalReview.setHorizontalAlignment(SwingConstants.CENTER);
@@ -244,8 +245,6 @@ public class gui_Reviewe extends JFrame {
 		lblChoose.setBounds(10, 313, 46, 14);
 		panel_select3.add(lblChoose);
 
-
-
 		JScrollPane scrollPane_5 = new JScrollPane();
 		scrollPane_5.setBounds(0, 56, 502, 215);
 		panel_select3.add(scrollPane_5);
@@ -266,8 +265,6 @@ public class gui_Reviewe extends JFrame {
 		JLabel label_4 = new JLabel("Choose");
 		label_4.setBounds(161, 228, 46, 14);
 		panel_article.add(label_4);
-
-
 
 		JScrollPane scrollPane_6 = new JScrollPane();
 		scrollPane_6.setBounds(0, 0, 502, 210);
@@ -290,22 +287,48 @@ public class gui_Reviewe extends JFrame {
 		separator.setBounds(98, 41, 294, 2);
 		panel_choice.add(separator);
 
-		JButton button_4 = new JButton("Check Response");
-		button_4.setBounds(175, 88, 148, 43);
-		panel_choice.add(button_4);
-
 		JScrollPane scrollPane_4 = new JScrollPane();
 		scrollPane_4.setBounds(0, 190, 512, 191);
 		panel_choice.add(scrollPane_4);
 
-		JTextArea textArea_3 = new JTextArea();
-		scrollPane_4.setViewportView(textArea_3);
+		JTextArea textArea_choice3 = new JTextArea();
+		scrollPane_4.setViewportView(textArea_choice3);
 
 		JButton button_11 = new JButton("Initial Verdict");
+		button_11.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if (reviewer.checkSubmission(reviewer.getsubID())) {
+						switchPanels(panel_initial);
+					} else {
+						JOptionPane.showMessageDialog(null, "No Submission");
+					}
+				} catch (HeadlessException | NoSuchAlgorithmException | SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		button_11.setBounds(0, 88, 148, 43);
 		panel_choice.add(button_11);
 
 		JButton button_12 = new JButton("Final Verdict");
+		button_12.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if (reviewer.checkInitialreview(reviewer.getsubID()) && check) {
+						switchPanels(panel_final);
+					} else if (check == false) {
+						JOptionPane.showMessageDialog(null, "Waiting for Response");
+					} else {
+						JOptionPane.showMessageDialog(null, "Waiting for Initial");
+					}
+				} catch (HeadlessException | NoSuchAlgorithmException | SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		button_12.setBounds(354, 88, 148, 45);
 		panel_choice.add(button_12);
 
@@ -324,7 +347,6 @@ public class gui_Reviewe extends JFrame {
 		JButton btnClose = new JButton("Close");
 		btnClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				check = false;
 				switchPanels(panel_initial);
 			}
 		});
@@ -334,9 +356,7 @@ public class gui_Reviewe extends JFrame {
 		JButton btnSubmit_2 = new JButton("Submit");
 		btnSubmit_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				while (check) {
-					questions.add(txtrquestion.getText());
-				}
+				questions.add(txtrquestion.getText());
 			}
 		});
 		btnSubmit_2.setBounds(375, 283, 128, 42);
@@ -363,15 +383,22 @@ public class gui_Reviewe extends JFrame {
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String sum = textArea_sumI.getText();
-				String typo = textArea_typoI.getText();
 				try {
-					reviewer.submitInitialVerdict(sum, typo, questions);
-				} catch (NoSuchAlgorithmException | SQLException e1) {
+					if (reviewer.checkSubmission(review.getsubID())) {
+						String sum = textArea_sumI.getText();
+						String typo = textArea_typoI.getText();
+						String verdict = (String) comboBox_I.getItemAt(comboBox_I.getSelectedIndex());
+						reviewer.submitInitialVerdict(sum, typo, verdict, questions);
+					} else {
+						JOptionPane.showMessageDialog(null, "No Submission");
+					}
+				} catch (SQLException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (NoSuchAlgorithmException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				check = true;
 				switchPanels(panel_choice);
 			}
 		});
@@ -387,9 +414,15 @@ public class gui_Reviewe extends JFrame {
 						textArea_select3.setText(null);
 						switchPanels(panel_select3);
 						data = reviewer.showArticleForSelection();
-						if (data.size() >= 3) {
+						ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
+						for (ArrayList<String> dataset : data) {
+							if (reviewer.uniAffliation(reviewer.getUniAffiliation(), dataset.get(0))) {
+								rows.add(dataset);
+							}
+						}
+						if (rows.size() >= 3) {
 							int count = 1;
-							for (ArrayList<String> list : data) {
+							for (ArrayList<String> list : rows) {
 								String put = (count + ") Title: " + list.get(1) + " Author: " + list.get(3));
 								textArea_select3.setText((textArea_select3.getText() + put + "\n"));
 								count++;
@@ -405,7 +438,8 @@ public class gui_Reviewe extends JFrame {
 						data = reviewer.viewArticle();
 						int count = 1;
 						for (ArrayList<String> list : data) {
-							String put = (count + ") Title: " + list.get(1) + " Author: " + list.get(3));
+							String put = (count + ") Title: " + Author.articleTitle(list.get(1)) + "Submission ID: "
+									+ list.get(1));
 							textArea_choice.setText((textArea_choice.getText() + put + "\n"));
 							count++;
 						}
@@ -418,7 +452,7 @@ public class gui_Reviewe extends JFrame {
 		});
 		button_2.setBounds(40, 34, 122, 52);
 		panel_1.add(button_2);
-		
+
 		JButton btnSubmit_1 = new JButton("Submit");
 		btnSubmit_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -442,26 +476,77 @@ public class gui_Reviewe extends JFrame {
 		});
 		btnSubmit_1.setBounds(160, 340, 151, 36);
 		panel_select3.add(btnSubmit_1);
-		
+
 		JLabel lblArticleSelection = new JLabel("ARTICLE SELECTION");
 		lblArticleSelection.setHorizontalAlignment(SwingConstants.CENTER);
 		lblArticleSelection.setBounds(133, 0, 197, 27);
 		panel_select3.add(lblArticleSelection);
-		
+
 		JSeparator separator_2 = new JSeparator();
 		separator_2.setBounds(98, 25, 262, 2);
 		panel_select3.add(separator_2);
-		
+
 		JButton button_1 = new JButton("Submit");
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String choice =textField_artchoice.getText();
+				String choice = textField_artchoice.getText();
 				reviewer.setSubId(data, choice);
 				JOptionPane.showMessageDialog(null, "Article selected");
+				try {
+					label_1.setText(label_1.getText() + " " + Author.articleTitle(Reviewers.getsubID()));
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				switchPanels(panel_choice);
 			}
 		});
 		button_1.setBounds(161, 256, 151, 36);
 		panel_article.add(button_1);
+
+		JButton button_3 = new JButton("Submit");
+		button_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					String sum = textArea_sumf.getText();
+					String typo = textArea_typoF.getText();
+					String verdict = (String) comboBox_F.getItemAt(comboBox_F.getSelectedIndex());
+					reviewer.submitFinalVerdict(sum, typo, verdict);
+				} catch (SQLException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (NoSuchAlgorithmException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				switchPanels(panel_choice);
+			}
+		});
+		button_3.setBounds(168, 327, 132, 38);
+		panel_final.add(button_3);
+
+		JButton button_4 = new JButton("Check Response");
+		button_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textArea_choice3.setText(null);
+				try {
+					ArrayList<ArrayList<String>> rows = reviewer.checkResponse(reviewer.getsubID());
+					if (rows.isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Waiting for response");
+					} else {
+						for (ArrayList<String> row : rows) {
+							textArea_choice3.append("Question: " + row.get(2) + "\n");
+							textArea_choice3.append("Question: " + row.get(3) + "\n");
+						}
+						check = true;
+					}
+				} catch (NoSuchAlgorithmException | SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		button_4.setBounds(175, 88, 148, 43);
+		panel_choice.add(button_4);
 	}
 }

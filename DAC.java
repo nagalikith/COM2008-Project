@@ -11,6 +11,10 @@ public class DAC {
 
 	public void main(String[] args) throws Exception {
 	}
+	
+	public static Connection getCon() throws SQLException {
+			return con;
+	}
 
 	public static void changePassword(String query, String password, String email) throws SQLException {
 		connectionOpen();
@@ -79,12 +83,13 @@ public class DAC {
 		}
 	}
 
-	public static boolean checkEmail(String query) throws SQLException {
+	public static boolean checkEmail(String query , String email) throws SQLException {
 		connectionOpen();
 		Statement stmt = null;
 		try {
-			stmt = con.createStatement();
-			rs = stmt.executeQuery(query);
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setString(1, email);
+			rs = pstmt.executeQuery();
 			if (rs.next() == false) {
 				return true;
 			} else {
@@ -101,12 +106,13 @@ public class DAC {
 		return false;
 	}
 
-	public static boolean checkUser(String query, String password) throws SQLException {
+	public static boolean checkUser(String query,String email ,String password) throws SQLException {
 		connectionOpen();
 		Statement stmt = null;
 		try {
-			stmt = con.createStatement();
-			rs = stmt.executeQuery(query);
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setString(1, email);
+			rs = pstmt.executeQuery();
 			rs.next();
 			String pass = rs.getString(5);
 			if (pass.compareTo(password) == 0) {
@@ -158,7 +164,7 @@ public class DAC {
 			PreparedStatement pstmt = con.prepareStatement(query);
 			pstmt.setString(1, email);
 			pstmt.setString(2, role);
-			int rs = pstmt.executeUpdate();
+			pstmt.executeUpdate();
 		} catch (SQLException ex) {
 			System.out.println(ex);
 		} finally {
@@ -222,6 +228,8 @@ public class DAC {
 			}
 		}
 	}
+	
+	
 
 	public static ArrayList<ArrayList<String>> getArticle(String query, String email) throws SQLException {
 		// TODO Auto-generated method stub
@@ -254,13 +262,42 @@ public class DAC {
 		return null;
 
 	}
-
-	public static ArrayList<ArrayList<String>> getreview(String query) throws SQLException {
+	
+	public static ArrayList<ArrayList<String>> checkreview(String query,String subid,String revid) throws SQLException {
 		// TODO Auto-generated method stub
 		connectionOpen();
 		ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
 		try {
 			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setString(1, subid);
+			pstmt.setString(2, revid);
+			rs = pstmt.executeQuery();
+
+			ArrayList<String> row = new ArrayList<String>();
+
+			while (rs.next()) {
+				row = new ArrayList<String>();
+				row.add(rs.getString(6));
+				rows.add(row);
+			}
+			pstmt.close();
+			return rows;
+		} catch (SQLException e) {
+			System.out.println(e);
+		} finally {
+			connectionClose();
+		}
+		return null;
+
+	}
+
+	public static ArrayList<ArrayList<String>> getreview(String query , String value) throws SQLException {
+		// TODO Auto-generated method stub
+		connectionOpen();
+		ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
+		try {
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setString(1, value);
 			rs = pstmt.executeQuery();
 
 			ArrayList<String> row = new ArrayList<String>();
@@ -332,7 +369,7 @@ public class DAC {
 
 	}
 
-	public static void addinitialsub(String query, String sum, String typo, String judgement, String status,
+	public static void addinitialsub(String query, String revid ,String sum, String typo, String judgement, String status,
 			String subid) throws SQLException {
 		// TODO Auto-generated method stub
 		connectionOpen();
@@ -343,7 +380,8 @@ public class DAC {
 			pstmt.setString(2, typo);
 			pstmt.setString(3, judgement);
 			pstmt.setString(4, status);
-			pstmt.setString(5, subid);
+			pstmt.setString(5, revid);
+			pstmt.setString(6, subid);
 			pstmt.executeUpdate();
 		} catch (SQLException ex) {
 			System.out.println(ex);
@@ -408,6 +446,36 @@ public class DAC {
 			connectionClose();
 			
 		}
+	}
+	
+	public static ArrayList<ArrayList<String>> getErrors(String query , String id, String role) throws SQLException {		
+		connectionOpen();
+		try {
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setString(1, id);
+			pstmt.setString(2, role);
+			ResultSet rs = pstmt.executeQuery();
+
+			ArrayList<String> row = new ArrayList<String>();
+
+			ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
+			while (rs.next()) {
+				row = new ArrayList<String>();
+				row.add(rs.getString(1));
+				row.add(rs.getString(2));
+				row.add(rs.getString(3));
+				row.add(rs.getString(4));
+				row.add(rs.getString(5));
+				rows.add(row);
+			}
+			pstmt.close();
+			return rows;
+		} catch (SQLException e) {
+			System.out.println(e);
+		} finally {
+			DAC.connectionClose();
+		}
+		return null;
 	}
 
 }

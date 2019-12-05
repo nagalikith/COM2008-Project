@@ -5,6 +5,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.LayeredHighlighter.LayerPainter;
+
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -118,7 +121,8 @@ public class gui_author extends JFrame {
 		JButton btnLogOut = new JButton("Log Out");
 		btnLogOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				welcome_screen.main(null);
+				dispose();
 			}
 		});
 		btnLogOut.setBounds(40, 323, 122, 36);
@@ -272,10 +276,11 @@ public class gui_author extends JFrame {
 				try {
 					if (Integer.parseInt(choice) <= data.size()) {
 						String id = (data.get(Integer.parseInt(choice) - 1)).get(0);
-						auth.gettingsubID(id);
+						auth.setsubID(id);
 						switchPanels(panel_selected);
 						String title = (data.get(Integer.parseInt(choice) - 1)).get(1);
 						lblArticleTitle.setText(title);
+
 					} else {
 						JOptionPane.showMessageDialog(null, "Wrong Choice");
 					}
@@ -308,27 +313,27 @@ public class gui_author extends JFrame {
 
 		textField_title2 = new JTextField();
 		textField_title2.setColumns(10);
-		textField_title2.setBounds(98, 87, 122, 33);
+		textField_title2.setBounds(89, 207, 122, 33);
 		panel_rev.add(textField_title2);
 
 		JLabel label_2 = new JLabel("Title");
 		label_2.setHorizontalAlignment(SwingConstants.CENTER);
-		label_2.setBounds(28, 87, 71, 33);
+		label_2.setBounds(20, 207, 71, 33);
 		panel_rev.add(label_2);
 
 		textField_abst2 = new JTextField();
 		textField_abst2.setColumns(10);
-		textField_abst2.setBounds(98, 146, 122, 33);
+		textField_abst2.setBounds(89, 251, 122, 33);
 		panel_rev.add(textField_abst2);
 
 		JLabel label_3 = new JLabel("Abstract\r\n");
 		label_3.setHorizontalAlignment(SwingConstants.CENTER);
-		label_3.setBounds(28, 146, 71, 33);
+		label_3.setBounds(20, 251, 71, 33);
 		panel_rev.add(label_3);
 
 		JLabel label_4 = new JLabel("PDF");
 		label_4.setHorizontalAlignment(SwingConstants.CENTER);
-		label_4.setBounds(28, 208, 71, 33);
+		label_4.setBounds(20, 295, 71, 33);
 		panel_rev.add(label_4);
 
 		JButton button_1 = new JButton("SubmitArticle");
@@ -352,7 +357,7 @@ public class gui_author extends JFrame {
 				textField_pdf2.setText(null);
 			}
 		});
-		button_1.setBounds(188, 262, 122, 36);
+		button_1.setBounds(195, 334, 122, 36);
 		panel_rev.add(button_1);
 
 		JButton btnBrowse = new JButton("Browse");
@@ -364,13 +369,25 @@ public class gui_author extends JFrame {
 				textField_pdf2.setText(fc.getSelectedFile().getAbsolutePath());
 			}
 		});
-		btnBrowse.setBounds(98, 206, 122, 36);
+		btnBrowse.setBounds(89, 300, 102, 23);
 		panel_rev.add(btnBrowse);
 
 		textField_pdf2 = new JTextField();
 		textField_pdf2.setColumns(10);
-		textField_pdf2.setBounds(230, 214, 231, 20);
+		textField_pdf2.setBounds(215, 301, 231, 20);
 		panel_rev.add(textField_pdf2);
+
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(10, 83, 492, 113);
+		panel_rev.add(scrollPane_1);
+
+		JTextArea textArea_2 = new JTextArea();
+		scrollPane_1.setViewportView(textArea_2);
+
+		JLabel lblNewLabel_2 = new JLabel("Remarks");
+		lblNewLabel_2.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_2.setBounds(10, 58, 102, 23);
+		panel_rev.add(lblNewLabel_2);
 
 		JPanel panel_coathur = new JPanel();
 		layeredPane.add(panel_coathur, "name_1681158205396400");
@@ -466,11 +483,38 @@ public class gui_author extends JFrame {
 		btnNewButton_signup.setBounds(203, 231, 89, 43);
 		panel_coathur.add(btnNewButton_signup);
 
-		JButton btnNewButton_2 = new JButton("Check Response");
-		btnNewButton_2.setBounds(368, 88, 134, 23);
-		panel_selected.add(btnNewButton_2);
-
 		JButton btnNewButton_3 = new JButton("Respond to review");
+		btnNewButton_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					String value = "";
+					ArrayList<String> answer = new ArrayList<String>();
+					ArrayList<ArrayList<String>> answers = new ArrayList<ArrayList<String>>();
+					if ((auth.mainAuthor(auth.getsubID())).compareTo("1") == 0) {
+						data = auth.criticismQuestions(auth.getsubID());
+						if (data.size() >= 3) {
+							for (ArrayList<String> rows : data) {
+								for (String row : rows) {
+									System.out.println(row);
+									value = JOptionPane.showInputDialog(row);
+									answer.add(value);
+								}
+								answers.add(answer);
+
+							}
+							auth.respondToReviews(answers);
+						} else {
+							JOptionPane.showMessageDialog(null, "Waiting for all Reviews");
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "ERROR : Not a MAin Author");
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 		btnNewButton_3.setBounds(0, 122, 134, 23);
 		panel_selected.add(btnNewButton_3);
 
@@ -520,10 +564,23 @@ public class gui_author extends JFrame {
 		btnChangePassword.setBounds(40, 118, 122, 36);
 		panel_select.add(btnChangePassword);
 
+		JScrollPane scrollPane_2 = new JScrollPane();
+		scrollPane_2.setBounds(191, 118, 513, 100);
+		panel_select.add(scrollPane_2);
+
 		JButton btnSubmitRevisedArticle = new JButton("Submit Final Article");
 		btnSubmitRevisedArticle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				switchPanels(panel_rev);
+				try {
+					if ((auth.mainAuthor(auth.getsubID())).compareTo("1") == 0) {
+						switchPanels(panel_rev);
+					} else {
+						JOptionPane.showMessageDialog(null, "Not a Main Author");
+					}
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		btnSubmitRevisedArticle.setBounds(0, 156, 134, 23);
@@ -542,9 +599,13 @@ public class gui_author extends JFrame {
 				textArea_select.setText(null);
 				try {
 					ArrayList<ArrayList<String>> rows = auth.checkInitialVerdict();
-					for (ArrayList<String> row : rows) {
-						textArea_select.setText(textArea_select.getText() + "Reviwer ID: " + row.get(0) + "Verdict: "
-								+ row.get(4) + "\n");
+					if (rows.isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Waiting for Initial Verdict");
+					} else {
+						for (ArrayList<String> row : rows) {
+							textArea_select.setText(textArea_select.getText() + "Reviwer ID: " + row.get(0) + "\n"
+									+ "Verdict: " + row.get(4) + "\n");
+						}
 					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
@@ -561,9 +622,13 @@ public class gui_author extends JFrame {
 				textArea_select.setText(null);
 				try {
 					ArrayList<ArrayList<String>> rows = auth.checkFinalVerdict();
-					for (ArrayList<String> row : rows) {
-						textArea_select.setText(textArea_select.getText() + "Reviwer ID: " + row.get(0) + "Verdict: "
-								+ row.get(4) + "\n");
+					if (rows.isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Waiting for Final Verdtict");
+					} else {
+						for (ArrayList<String> row : rows) {
+							textArea_select.setText(textArea_select.getText() + "Reviwer ID: " + row.get(0) + "\n"
+									+ "Verdict: " + row.get(4) + "\n");
+						}
 					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
@@ -576,6 +641,32 @@ public class gui_author extends JFrame {
 		panel_selected.add(btnFinalVerdict);
 
 		JButton btnCheckReview = new JButton("Check Review");
+		btnCheckReview.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				textArea_select.setText("");
+				try {
+					String query = "SELECT * FROM review WHERE subid = ? AND status = 'Initial' ;";
+					String put = "";
+					ArrayList<ArrayList<String>> questions = new ArrayList<ArrayList<String>>();
+					ArrayList<ArrayList<String>> rows = DAC.getreview(query, auth.getsubID());
+					if (rows.isEmpty()) {
+						JOptionPane.showMessageDialog(null, "No Review Yet");
+					} else {
+						for (ArrayList<String> row : rows) {
+							questions = auth.checkReview(row.get(0));
+							textArea_select.append("Rev ID: " + row.get(0) + "\n");
+							textArea_select.append("SUMMARY: " + row.get(2) + "\n");
+							textArea_select.append("TYPO: " + row.get(3) + "\n");
+							for (ArrayList<String> question : questions)
+								textArea_select.append("QUESTION:  " + question.get(2) + "\n");
+						}
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 		btnCheckReview.setBounds(0, 88, 134, 23);
 		panel_selected.add(btnCheckReview);
 
@@ -598,19 +689,18 @@ public class gui_author extends JFrame {
 		});
 		btnNewButton_5.setBounds(178, 122, 134, 23);
 		panel_selected.add(btnNewButton_5);
-		
+
 		JButton btnNewButton_4 = new JButton("Final Article");
 		btnNewButton_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textArea_select.setText(null);
 				try {
 					ArrayList<ArrayList<String>> rows = auth.checkFinalArticle();
-					if (rows == null ) {
+					if (rows.isEmpty() || rows == null) {
 						JOptionPane.showMessageDialog(null, "No Final Article");
 					} else {
-						textArea_select.setText("Article Details :"+rows.get(0));
+						textArea_select.setText("Article Details :" + rows.get(0));
 					}
-					textArea.setText("Article Details :"+rows.get(0));
 				} catch (SQLException | IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -619,6 +709,30 @@ public class gui_author extends JFrame {
 		});
 		btnNewButton_4.setBounds(178, 156, 134, 23);
 		panel_selected.add(btnNewButton_4);
+
+		JButton btnNewButton_2 = new JButton("Check Response");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				textArea_select.setText(null);
+				try {
+					ArrayList<ArrayList<String>> responses = auth.checkResponse(auth.getsubID());
+					if (responses.isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Main Author has to reply");
+					} else {
+						for (ArrayList<String> response : responses) {
+							textArea_select.append("Question: " + response.get(2) + "\n");
+							textArea_select.append("Answer: " + response.get(3) + "\n");
+							textArea_select.append("---------------------------- \n");
+						}
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		btnNewButton_2.setBounds(368, 88, 134, 23);
+		panel_selected.add(btnNewButton_2);
 
 	}
 }
