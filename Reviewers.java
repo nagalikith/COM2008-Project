@@ -65,7 +65,6 @@ public class Reviewers extends User {
 		return rows;
 
 	}
-	
 	public boolean uniAffliation(String uni , String id) throws SQLException {
 		String query = "select submission.id ,user.uni from submission,user where submission.email = user.email AND uni = ? ; ";
 		try {
@@ -79,7 +78,6 @@ public class Reviewers extends User {
 				row = new ArrayList<String>();
 				row.add(rs.getString("uni"));
 			}
-			
 			if (row.contains(uni)) {
 				return true;
 			} else {

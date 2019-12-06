@@ -37,16 +37,17 @@ public class Author extends User {
 		return (rows.get(0)).get(4);
 	}
 
-	public void submitArticle(String title, String abst, String pdf)
+	public void submitArticle(String title, String abst, String pdf, String journal)
 			throws SQLException, NoSuchAlgorithmException, FileNotFoundException {
 		String uniqueID = UUID.randomUUID().toString();
-		String query = "INSERT INTO submission VALUES (?,?,?,?,?,TRUE,'Submission');";
+		String query = "INSERT INTO submission VALUES (?,?,?,?,?,TRUE,'Submission',?);";
 		ArrayList<String> data = new ArrayList<String>();
 		data.add(uniqueID);
 		data.add(title);
 		data.add(abst);
 		data.add(this.getEmail());
 		data.add(pdf);
+		data.add(journal);
 		DAC.publish(query, data);
 		query = "INSERT INTO roles VALUES (?,?);";
 		login.addroll("Reviewer", getEmail());
@@ -104,15 +105,27 @@ public class Author extends User {
 
 	}
 
-	public void submitRevisedArticle(String title, String abst, String pdf) throws SQLException, FileNotFoundException {
-		String query = "INSERT INTO submission VALUES (?,?,?,?,?,TRUE,'Revised');";
-		ArrayList<String> data = new ArrayList<String>();
-		data.add(subid);
-		data.add(title);
-		data.add(abst);
-		data.add(this.getEmail());
-		data.add(pdf);
-		DAC.publish(query, data);
+	public void submitRevisedArticle(String pdf) throws SQLException, FileNotFoundException {
+		String query = "INSERT INTO revised VALUES (?,?);";
+		DAC.connectionOpen();
+		PreparedStatement pstmt = null;
+		try {
+
+			File file = new File(pdf);
+			FileInputStream input = new FileInputStream(file);
+
+			pstmt = DAC.getCon().prepareStatement(query);
+			pstmt.setString(1, subid);
+			pstmt.setBinaryStream(2, input);
+			pstmt.executeUpdate();
+		} catch (SQLException ex) {
+			System.out.println(ex);
+		} finally {
+			if (pstmt != null) {
+				pstmt.close();
+				DAC.connectionClose();
+			}
+		}
 	}
 
 	public static String articleTitle(String sub) throws SQLException {
@@ -150,13 +163,11 @@ public class Author extends User {
 	}
 
 	public ArrayList<ArrayList<String>> checkFinalArticle() throws SQLException, IOException {
-		String queryCheck = "SELECT * FROM submission WHERE id = ? AND status = 'Revised' AND mainauthor = TRUE ;";
-		String querypdf = "SELECT pdf FROM submission WHERE id = ? AND status = 'Revised' AND mainauthor = TRUE ;";
+		String queryCheck = "SELECT * FROM submission WHERE id = ? AND status = 'Submission' AND mainauthor = TRUE ;";
 		ArrayList<ArrayList<String>> rows = DAC.getArticle(queryCheck, subid);
 		if (rows.size() == 0) {
 			return rows;
 		} else {
-			DAC.getpdf(querypdf, subid);
 			return rows;
 		}
 
@@ -274,20 +285,16 @@ public class Author extends User {
 		}
 	}
 
-	public void trackStatusArticle() {
-		// all authors may log in to track the status of their submitted article, until
-		// the editor dealing
-		// with this submission decides to accept or reject the article;
-	}
-
-	// all logged-in authors can see the reviews (of their own submission), the
-	// initial verdicts, their
-	// responses, the final verdicts and the initial and revised versions of their
-	// article;
 
 	public ArrayList<ArrayList<String>> checkReview(String revid) throws SQLException {
 		String query = "select * from errors WHERE subid = ? AND revid = ? ";
 		return DAC.getErrors(query, subid, revid);
+
+	}
+	
+	public static boolean checkFinalarticle(String id) throws SQLException {
+		String query = "select id from revised WHERE subid = ?";
+		return DAC.checkEmail(query, id);
 
 	}
 

@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.HeadlessException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -31,6 +32,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 public class gui_author extends JFrame {
 	private JPanel contentPane;
@@ -47,9 +50,6 @@ public class gui_author extends JFrame {
 
 	private static Author auth;
 	private ArrayList<ArrayList<String>> data = null;
-	private JTextField textField_title2;
-	private JTextField textField_abst2;
-	private JTextField textField_pdf2;
 	private JTextField textField_pdf;
 
 	/**
@@ -174,32 +174,10 @@ public class gui_author extends JFrame {
 
 		JLabel lblPdf = new JLabel("PDF");
 		lblPdf.setHorizontalAlignment(SwingConstants.CENTER);
-		lblPdf.setBounds(28, 208, 71, 33);
+		lblPdf.setBounds(28, 278, 71, 33);
 		panel_submit.add(lblPdf);
 
-		JButton button = new JButton("SubmitArticle");
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String title = textField_title.getText();
-				String abst = textField_abs.getText();
-				String pdf = textField_pdf.getText();
-				try {
-					auth.submitArticle(title, abst, pdf);
-					JOptionPane.showMessageDialog(null, "ARTICLE SUBMITTED");
-				} catch (NoSuchAlgorithmException | SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				textField_title.setText(null);
-				textField_abs.setText(null);
-				textField_pdf.setText(null);
-			}
-		});
-		button.setBounds(188, 262, 122, 36);
-		panel_submit.add(button);
+
 
 		JButton button_2 = new JButton("Browse");
 		button_2.addActionListener(new ActionListener() {
@@ -210,13 +188,23 @@ public class gui_author extends JFrame {
 				textField_pdf.setText(fc.getSelectedFile().getAbsolutePath());
 			}
 		});
-		button_2.setBounds(98, 208, 122, 36);
+		button_2.setBounds(98, 276, 122, 36);
 		panel_submit.add(button_2);
 
 		textField_pdf = new JTextField();
 		textField_pdf.setColumns(10);
-		textField_pdf.setBounds(230, 216, 231, 20);
+		textField_pdf.setBounds(240, 284, 231, 20);
 		panel_submit.add(textField_pdf);
+		
+		JComboBox comboBox_J = new JComboBox();
+		comboBox_J.setModel(new DefaultComboBoxModel(new String[] {"Journal of Computer Science", "Journal of Software Engineering", "Journal of Artificial Intelligence"}));
+		comboBox_J.setBounds(98, 209, 179, 33);
+		panel_submit.add(comboBox_J);
+		
+		JLabel lblJournal = new JLabel("Journal");
+		lblJournal.setHorizontalAlignment(SwingConstants.CENTER);
+		lblJournal.setBounds(38, 209, 61, 33);
+		panel_submit.add(lblJournal);
 
 		JPanel panel_selected = new JPanel();
 		panel_selected.setLayout(null);
@@ -296,98 +284,6 @@ public class gui_author extends JFrame {
 		JTextArea textArea = new JTextArea();
 		textArea.setBounds(0, 41, 512, 230);
 		panel_getID.add(textArea);
-
-		JPanel panel_rev = new JPanel();
-		panel_rev.setLayout(null);
-		panel_rev.setBackground(SystemColor.controlHighlight);
-		layeredPane.add(panel_rev, "name_1701542431934700");
-
-		JLabel lblRevisedArticle = new JLabel("REVISED ARTICLE");
-		lblRevisedArticle.setHorizontalAlignment(SwingConstants.CENTER);
-		lblRevisedArticle.setBounds(98, 0, 280, 43);
-		panel_rev.add(lblRevisedArticle);
-
-		JSeparator separator_5 = new JSeparator();
-		separator_5.setBounds(98, 41, 294, 2);
-		panel_rev.add(separator_5);
-
-		textField_title2 = new JTextField();
-		textField_title2.setColumns(10);
-		textField_title2.setBounds(89, 207, 122, 33);
-		panel_rev.add(textField_title2);
-
-		JLabel label_2 = new JLabel("Title");
-		label_2.setHorizontalAlignment(SwingConstants.CENTER);
-		label_2.setBounds(20, 207, 71, 33);
-		panel_rev.add(label_2);
-
-		textField_abst2 = new JTextField();
-		textField_abst2.setColumns(10);
-		textField_abst2.setBounds(89, 251, 122, 33);
-		panel_rev.add(textField_abst2);
-
-		JLabel label_3 = new JLabel("Abstract\r\n");
-		label_3.setHorizontalAlignment(SwingConstants.CENTER);
-		label_3.setBounds(20, 251, 71, 33);
-		panel_rev.add(label_3);
-
-		JLabel label_4 = new JLabel("PDF");
-		label_4.setHorizontalAlignment(SwingConstants.CENTER);
-		label_4.setBounds(20, 295, 71, 33);
-		panel_rev.add(label_4);
-
-		JButton button_1 = new JButton("SubmitArticle");
-		button_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String title = textField_title2.getText();
-				String abst = textField_abst2.getText();
-				String pdf = textField_pdf2.getText();
-				try {
-					auth.submitRevisedArticle(title, abst, pdf);
-					JOptionPane.showMessageDialog(null, "Revised Article Submitted");
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				textField_abst2.setText(null);
-				textField_title2.setText(null);
-				textField_pdf2.setText(null);
-			}
-		});
-		button_1.setBounds(195, 334, 122, 36);
-		panel_rev.add(button_1);
-
-		JButton btnBrowse = new JButton("Browse");
-		btnBrowse.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fc = new JFileChooser();
-				fc.setCurrentDirectory(new java.io.File("."));
-				fc.showOpenDialog(null);
-				textField_pdf2.setText(fc.getSelectedFile().getAbsolutePath());
-			}
-		});
-		btnBrowse.setBounds(89, 300, 102, 23);
-		panel_rev.add(btnBrowse);
-
-		textField_pdf2 = new JTextField();
-		textField_pdf2.setColumns(10);
-		textField_pdf2.setBounds(215, 301, 231, 20);
-		panel_rev.add(textField_pdf2);
-
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(10, 83, 492, 113);
-		panel_rev.add(scrollPane_1);
-
-		JTextArea textArea_2 = new JTextArea();
-		scrollPane_1.setViewportView(textArea_2);
-
-		JLabel lblNewLabel_2 = new JLabel("Remarks");
-		lblNewLabel_2.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel_2.setBounds(10, 58, 102, 23);
-		panel_rev.add(lblNewLabel_2);
 
 		JPanel panel_coathur = new JPanel();
 		layeredPane.add(panel_coathur, "name_1681158205396400");
@@ -519,16 +415,25 @@ public class gui_author extends JFrame {
 		panel_selected.add(btnNewButton_3);
 
 		JButton btnTrackStatus = new JButton("Track Status");
-		btnTrackStatus.setBounds(368, 122, 134, 23);
+		btnTrackStatus.setBounds(353, 156, 134, 23);
 		panel_selected.add(btnTrackStatus);
 
 		JButton btnRegisterCoAuthor = new JButton("Register Co Author");
 		btnRegisterCoAuthor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				switchPanels(panel_coathur);
+				try {
+					if (auth.mainAuthor(auth.getsubID()).compareTo("1") == 0) {
+						switchPanels(panel_coathur);
+					} else {
+						JOptionPane.showMessageDialog(null, "Not a Main author");
+					}
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
-		btnRegisterCoAuthor.setBounds(0, 54, 134, 23);
+		btnRegisterCoAuthor.setBounds(0, 88, 134, 23);
 		panel_selected.add(btnRegisterCoAuthor);
 
 		JButton btnSelectArticle = new JButton("Select article");
@@ -572,12 +477,26 @@ public class gui_author extends JFrame {
 		btnSubmitRevisedArticle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if ((auth.mainAuthor(auth.getsubID())).compareTo("1") == 0) {
-						switchPanels(panel_rev);
+					if (auth.mainAuthor(auth.getsubID()).compareTo("1") == 0) {
+						JFileChooser fc = new JFileChooser();
+						fc.setCurrentDirectory(new java.io.File("."));
+						fc.showOpenDialog(null);
+						try {
+							if (auth.checkFinalarticle(auth.getsubID())) {
+								auth.submitRevisedArticle(fc.getSelectedFile().getAbsolutePath());
+								JOptionPane.showMessageDialog(null, "Final Article Submitted");
+							} else {
+								JOptionPane.showMessageDialog(null, "Final Already Article submitted");
+							}
+						} catch (FileNotFoundException | SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
 					} else {
-						JOptionPane.showMessageDialog(null, "Not a Main Author");
+						JOptionPane.showMessageDialog(null, "Main Author only");
 					}
-				} catch (SQLException e1) {
+				} catch (HeadlessException | SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
@@ -613,7 +532,7 @@ public class gui_author extends JFrame {
 				}
 			}
 		});
-		btnInitialVerdict.setBounds(178, 54, 134, 23);
+		btnInitialVerdict.setBounds(178, 88, 134, 23);
 		panel_selected.add(btnInitialVerdict);
 
 		JButton btnFinalVerdict = new JButton("Final Verdict");
@@ -637,7 +556,7 @@ public class gui_author extends JFrame {
 			}
 
 		});
-		btnFinalVerdict.setBounds(178, 88, 134, 23);
+		btnFinalVerdict.setBounds(178, 122, 134, 23);
 		panel_selected.add(btnFinalVerdict);
 
 		JButton btnCheckReview = new JButton("Check Review");
@@ -667,7 +586,7 @@ public class gui_author extends JFrame {
 				}
 			}
 		});
-		btnCheckReview.setBounds(0, 88, 134, 23);
+		btnCheckReview.setBounds(178, 156, 134, 23);
 		panel_selected.add(btnCheckReview);
 
 		JButton btnNewButton_5 = new JButton("Initial Article");
@@ -687,7 +606,7 @@ public class gui_author extends JFrame {
 				}
 			}
 		});
-		btnNewButton_5.setBounds(178, 122, 134, 23);
+		btnNewButton_5.setBounds(353, 54, 134, 23);
 		panel_selected.add(btnNewButton_5);
 
 		JButton btnNewButton_4 = new JButton("Final Article");
@@ -695,11 +614,12 @@ public class gui_author extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				textArea_select.setText(null);
 				try {
+					String querypdf = "SELECT pdf FROM revised WHERE subid = ?";
 					ArrayList<ArrayList<String>> rows = auth.checkFinalArticle();
-					if (rows.isEmpty() || rows == null) {
-						JOptionPane.showMessageDialog(null, "No Final Article");
-					} else {
+					if (DAC.getpdf(querypdf, auth.getsubID())) {
 						textArea_select.setText("Article Details :" + rows.get(0));
+					} else {
+						JOptionPane.showMessageDialog(null, "No Final Article");
 					}
 				} catch (SQLException | IOException e1) {
 					// TODO Auto-generated catch block
@@ -707,7 +627,7 @@ public class gui_author extends JFrame {
 				}
 			}
 		});
-		btnNewButton_4.setBounds(178, 156, 134, 23);
+		btnNewButton_4.setBounds(353, 88, 134, 23);
 		panel_selected.add(btnNewButton_4);
 
 		JButton btnNewButton_2 = new JButton("Check Response");
@@ -731,8 +651,38 @@ public class gui_author extends JFrame {
 				}
 			}
 		});
-		btnNewButton_2.setBounds(368, 88, 134, 23);
+		btnNewButton_2.setBounds(353, 122, 134, 23);
 		panel_selected.add(btnNewButton_2);
+		
+		JLabel lblMainAuthor = new JLabel("Main Author");
+		lblMainAuthor.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMainAuthor.setBounds(0, 58, 134, 19);
+		panel_selected.add(lblMainAuthor);
+		
+		JButton button = new JButton("SubmitArticle");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String title = textField_title.getText();
+				String abst = textField_abs.getText();
+				String pdf = textField_pdf.getText();
+				String journal = (String) comboBox_J.getItemAt(comboBox_J.getSelectedIndex());
+				try {
+					auth.submitArticle(title, abst, pdf,journal);
+					JOptionPane.showMessageDialog(null, "ARTICLE SUBMITTED");
+				} catch (NoSuchAlgorithmException | SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				textField_title.setText(null);
+				textField_abs.setText(null);
+				textField_pdf.setText(null);
+			}
+		});
+		button.setBounds(208, 334, 122, 36);
+		panel_submit.add(button);
 
 	}
 }

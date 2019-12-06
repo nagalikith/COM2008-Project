@@ -85,7 +85,7 @@ public class gui_Reviewe extends JFrame {
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setBounds(10, 11, 183, 36);
 		panel.add(label);
-		
+
 		label.setText(reviewer.getFirstName());
 
 		JLabel lblReviewer = new JLabel("REVIEWER");
@@ -427,6 +427,7 @@ public class gui_Reviewe extends JFrame {
 								textArea_select3.setText((textArea_select3.getText() + put + "\n"));
 								count++;
 							}
+							data = rows;
 						} else {
 							JOptionPane.showMessageDialog(null, "Not Enough Articles to Select");
 							// System.out.println("Empty");

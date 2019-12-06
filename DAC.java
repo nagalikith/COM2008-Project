@@ -1,9 +1,7 @@
 
-
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
-
 
 public class DAC {
 	private static Connection con;
@@ -11,9 +9,9 @@ public class DAC {
 
 	public void main(String[] args) throws Exception {
 	}
-	
+
 	public static Connection getCon() throws SQLException {
-			return con;
+		return con;
 	}
 
 	public static void changePassword(String query, String password, String email) throws SQLException {
@@ -83,7 +81,7 @@ public class DAC {
 		}
 	}
 
-	public static boolean checkEmail(String query , String email) throws SQLException {
+	public static boolean checkEmail(String query, String email) throws SQLException {
 		connectionOpen();
 		Statement stmt = null;
 		try {
@@ -106,7 +104,7 @@ public class DAC {
 		return false;
 	}
 
-	public static boolean checkUser(String query,String email ,String password) throws SQLException {
+	public static boolean checkUser(String query, String email, String password) throws SQLException {
 		connectionOpen();
 		Statement stmt = null;
 		try {
@@ -218,6 +216,7 @@ public class DAC {
 			pstmt.setString(3, publishData.get(2));
 			pstmt.setString(4, publishData.get(3));
 			pstmt.setBinaryStream(5, input);
+			pstmt.setString(6, publishData.get(5));
 			pstmt.executeUpdate();
 		} catch (SQLException ex) {
 			System.out.println(ex);
@@ -228,8 +227,6 @@ public class DAC {
 			}
 		}
 	}
-	
-	
 
 	public static ArrayList<ArrayList<String>> getArticle(String query, String email) throws SQLException {
 		// TODO Auto-generated method stub
@@ -262,8 +259,9 @@ public class DAC {
 		return null;
 
 	}
-	
-	public static ArrayList<ArrayList<String>> checkreview(String query,String subid,String revid) throws SQLException {
+
+	public static ArrayList<ArrayList<String>> checkreview(String query, String subid, String revid)
+			throws SQLException {
 		// TODO Auto-generated method stub
 		connectionOpen();
 		ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
@@ -291,7 +289,7 @@ public class DAC {
 
 	}
 
-	public static ArrayList<ArrayList<String>> getreview(String query , String value) throws SQLException {
+	public static ArrayList<ArrayList<String>> getreview(String query, String value) throws SQLException {
 		// TODO Auto-generated method stub
 		connectionOpen();
 		ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
@@ -341,7 +339,7 @@ public class DAC {
 		}
 	}
 
-	public static void adderror(String query,String revid, String subid, ArrayList<String> errors, String role)
+	public static void adderror(String query, String revid, String subid, ArrayList<String> errors, String role)
 			throws SQLException {
 		// TODO Auto-generated method stub
 		connectionOpen();
@@ -369,8 +367,8 @@ public class DAC {
 
 	}
 
-	public static void addinitialsub(String query, String revid ,String sum, String typo, String judgement, String status,
-			String subid) throws SQLException {
+	public static void addinitialsub(String query, String revid, String sum, String typo, String judgement,
+			String status, String subid) throws SQLException {
 		// TODO Auto-generated method stub
 		connectionOpen();
 		PreparedStatement pstmt = null;
@@ -419,7 +417,7 @@ public class DAC {
 
 	}
 
-	public static void getpdf(String query, String subid) throws SQLException, IOException {
+	public static boolean getpdf(String query, String subid) throws SQLException, IOException {
 		// TODO Auto-generated method stub
 		connectionOpen();
 		try {
@@ -429,26 +427,32 @@ public class DAC {
 
 			File file = new File("DOWNLOADED.pdf");
 			FileOutputStream output = new FileOutputStream(file);
-			
+
 			System.out.println("Writing to file " + file.getAbsolutePath());
-			
-			while (rs.next()) {
-				InputStream input = rs.getBinaryStream("pdf");
-				byte[] buffer = new byte[1024];
-				while (input.read(buffer) > 0) {
-					output.write(buffer);
+			if (rs.next() == false) {
+				pstmt.close();
+				return false;
+			} else {
+				while (rs.next()) {
+					InputStream input = rs.getBinaryStream("pdf");
+					byte[] buffer = new byte[1024];
+					while (input.read(buffer) > 0) {
+						output.write(buffer);
+					}
 				}
+				pstmt.close();
+				return true;
 			}
-			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e);
 		} finally {
 			connectionClose();
-			
+
 		}
+		return false;
 	}
-	
-	public static ArrayList<ArrayList<String>> getErrors(String query , String id, String role) throws SQLException {		
+
+	public static ArrayList<ArrayList<String>> getErrors(String query, String id, String role) throws SQLException {
 		connectionOpen();
 		try {
 			PreparedStatement pstmt = con.prepareStatement(query);
