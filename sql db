@@ -1,0 +1,72 @@
+
+CREATE TABLE `currentedition` (
+  `articleid` varchar(250) DEFAULT NULL,
+  `journalname` text
+)
+
+CREATE TABLE `edition` (
+  `articleid` varchar(250) NOT NULL,
+  `editionnum` int(11) NOT NULL,
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `journal` text
+)
+
+CREATE TABLE `editor` (
+  `email` text,
+  `journal` text,
+  `chiefeditor` tinyint(1) DEFAULT NULL
+)
+
+CREATE TABLE `errors` (
+  `revid` text,
+  `subid` text,
+  `question` text,
+  `answers` text,
+  `count` int(11) DEFAULT NULL
+)
+
+CREATE TABLE `review` (
+  `revid` varchar(250) DEFAULT NULL,
+  `subid` varchar(250) DEFAULT NULL,
+  `summary` text,
+  `typos` text,
+  `judgement` text,
+  `status` varchar(250) DEFAULT NULL
+)
+
+CREATE TABLE `reviewedarticle` (
+  `articleid` varchar(250) DEFAULT NULL
+)
+
+CREATE TABLE `revised` (
+  `subid` varchar(250) DEFAULT NULL,
+  `pdf` longblob
+)
+
+CREATE TABLE `roles` (
+  `user` varchar(250) DEFAULT NULL,
+  `role` text,
+  KEY `user` (`user`),
+  CONSTRAINT `roles_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`email`)
+)
+
+CREATE TABLE `submission` (
+  `id` varchar(250) DEFAULT NULL,
+  `title` text,
+  `abstract` text,
+  `email` varchar(250) DEFAULT NULL,
+  `pdf` longblob,
+  `mainauthor` tinyint(1) DEFAULT NULL,
+  `status` text,
+  `journal` text
+)
+
+CREATE TABLE `user` (
+  `title` text NOT NULL,
+  `firstname` text NOT NULL,
+  `lastname` text NOT NULL,
+  `email` varchar(250) NOT NULL,
+  `password` varchar(256) NOT NULL,
+  `uni` text NOT NULL,
+  PRIMARY KEY (`email`)
+)
