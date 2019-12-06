@@ -1,3 +1,5 @@
+package classesTest;
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
@@ -58,8 +60,6 @@ public class welcome_screen extends JFrame {
 	 * Create the frame.
 	 */
 	public welcome_screen() {
-		setIconImage(Toolkit.getDefaultToolkit()
-				.getImage(welcome_screen.class.getResource("/images/Security-Password-2-icon.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 720, 420);
 		contentPane = new JPanel();
@@ -141,12 +141,19 @@ public class welcome_screen extends JFrame {
 							gui_Reviewe greviewer = new gui_Reviewe(reviewer);
 							greviewer.main(null);
 							dispose();
-						} else {
+						} else if (role == "Author") {
 							Author author = new Author(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4),
 									user.get(5));
 							JOptionPane.showMessageDialog(null, "Welcome: " + author.getFirstName().toUpperCase());
 							gui_author gauthor = new gui_author(author);
 							gauthor.main(null);
+							dispose();
+						} else {
+							Editor editor = new Editor(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4),
+									user.get(5));
+							JOptionPane.showMessageDialog(null, "Welcome: " + editor.getFirstName().toUpperCase());
+							gui_editor geditor = new gui_editor(editor);
+							geditor.main(null);
 							dispose();
 						}
 					} else {

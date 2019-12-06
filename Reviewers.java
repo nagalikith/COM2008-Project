@@ -1,3 +1,5 @@
+package classesTest;
+
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -66,7 +68,7 @@ public class Reviewers extends User {
 
 	}
 	public boolean uniAffliation(String uni , String id) throws SQLException {
-		String query = "select submission.id ,user.uni from submission,user where submission.email = user.email AND uni = ? ; ";
+		String query = "select submission.id ,user.uni from submission,user where submission.email = user.email AND id = ? ; ";
 		try {
 			PreparedStatement pstmt = DAC.getCon().prepareStatement(query);
 			pstmt.setString(1, id);
@@ -79,9 +81,9 @@ public class Reviewers extends User {
 				row.add(rs.getString("uni"));
 			}
 			if (row.contains(uni)) {
-				return true;
-			} else {
 				return false;
+			} else {
+				return true;
 			}
 			
 		}catch (Exception e) {
@@ -106,6 +108,8 @@ public class Reviewers extends User {
 		String revid = generateHash(getEmail());
 		String queryrev = "INSERT INTO review(revid,subid,summary,typos,judgement,status) VALUES (?,?,?,?,?,?);";
 		DAC.addFinalSub(queryrev, revid, subid, sum, typo, judgement, "FINAL");
+		
+		checkFinal();
 	}
 
 	public boolean checkInitialreview(String id) throws SQLException, NoSuchAlgorithmException {
@@ -151,6 +155,42 @@ public class Reviewers extends User {
 		}
 		return sb.toString();
 
+	}
+	
+	public static void checkFinal() throws SQLException {
+		DAC.connectionOpen();
+		
+		try {
+			String query = "SELECT subid,COUNT(subid) FROM review WHERE status = 'FINAL' GROUP BY subid";
+			PreparedStatement ptsmt = DAC.getCon().prepareStatement(query);
+			ResultSet rs = ptsmt.executeQuery();
+			
+			String insert = "INSERT INTO reviewedarticle VALUES(?)";
+			PreparedStatement ptsmt2 = DAC.getCon().prepareStatement(insert);
+			
+			String update = "UPDATE review SET status = 'complete' WHERE subid = ?";
+			PreparedStatement ptsmt3 = DAC.getCon().prepareStatement(update);
+
+			while(rs.next()) {
+				if(rs.getInt(2) == 3) {
+					
+					String subId = rs.getString(1);
+					
+					ptsmt2.setString(1, subId);
+					ptsmt3.setString(1, subId);
+					ptsmt2.executeUpdate();
+					ptsmt3.executeUpdate();
+				}
+			}
+			
+			
+		}
+		catch(SQLException e) {
+			System.out.println("checkFinal "+e);
+		}
+		finally {
+			DAC.connectionClose();
+		}
 	}
 
 	// String queryerror = "INSERT INTO errors VALUES (?,?,?,?,?);";

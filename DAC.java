@@ -1,3 +1,4 @@
+package classesTest;
 
 import java.io.*;
 import java.sql.*;
@@ -60,7 +61,7 @@ public class DAC {
 
 	public static void connectionOpen() throws SQLException {
 		try {
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "teddy123");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/testdb", "root", "sonal9999");
 		} catch (SQLException ex) {
 			connectionClose();
 		}
@@ -87,6 +88,30 @@ public class DAC {
 		try {
 			PreparedStatement pstmt = con.prepareStatement(query);
 			pstmt.setString(1, email);
+			rs = pstmt.executeQuery();
+			if (rs.next() == false) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (SQLException ex) {
+			System.out.println(ex);
+		} finally {
+			if (stmt != null) {
+				stmt.close();
+				connectionClose();
+			}
+		}
+		return false;
+	}
+
+	public static boolean checkEmail(String query, String email, String journal) throws SQLException {
+		connectionOpen();
+		Statement stmt = null;
+		try {
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setString(1, email);
+			pstmt.setString(2, journal);
 			rs = pstmt.executeQuery();
 			if (rs.next() == false) {
 				return true;
@@ -235,6 +260,39 @@ public class DAC {
 		try {
 			PreparedStatement pstmt = con.prepareStatement(query);
 			pstmt.setString(1, email);
+			rs = pstmt.executeQuery();
+
+			ArrayList<String> row = new ArrayList<String>();
+
+			while (rs.next()) {
+				row = new ArrayList<String>();
+				row.add(rs.getString("id"));
+				row.add(rs.getString("title"));
+				row.add(rs.getString("abstract"));
+				row.add(rs.getString("email"));
+				row.add(rs.getString("mainauthor"));
+				row.add(rs.getString("status"));
+				rows.add(row);
+			}
+			pstmt.close();
+			return rows;
+		} catch (SQLException e) {
+			System.out.println(e);
+		} finally {
+			connectionClose();
+		}
+		return null;
+
+	}
+
+	public static ArrayList<ArrayList<String>> getArticle(String query, String email, String id) throws SQLException {
+		// TODO Auto-generated method stub
+		connectionOpen();
+		ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
+		try {
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setString(1, email);
+			pstmt.setString(2, id);
 			rs = pstmt.executeQuery();
 
 			ArrayList<String> row = new ArrayList<String>();
@@ -428,18 +486,20 @@ public class DAC {
 			File file = new File("DOWNLOADED.pdf");
 			FileOutputStream output = new FileOutputStream(file);
 
-			System.out.println("Writing to file " + file.getAbsolutePath());
-			if (rs.next() == false) {
+			int count = 0;
+			while (rs.next()) {
+				InputStream input = rs.getBinaryStream("pdf");
+				byte[] buffer = new byte[1024];
+				while (input.read(buffer) > 0) {
+					output.write(buffer);
+				}
+				count = 1;
+			}
+			if (count == 0) {
 				pstmt.close();
 				return false;
 			} else {
-				while (rs.next()) {
-					InputStream input = rs.getBinaryStream("pdf");
-					byte[] buffer = new byte[1024];
-					while (input.read(buffer) > 0) {
-						output.write(buffer);
-					}
-				}
+				System.out.println("Writing to file " + file.getAbsolutePath());
 				pstmt.close();
 				return true;
 			}
@@ -458,6 +518,35 @@ public class DAC {
 			PreparedStatement pstmt = con.prepareStatement(query);
 			pstmt.setString(1, id);
 			pstmt.setString(2, role);
+			ResultSet rs = pstmt.executeQuery();
+
+			ArrayList<String> row = new ArrayList<String>();
+
+			ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
+			while (rs.next()) {
+				row = new ArrayList<String>();
+				row.add(rs.getString(1));
+				row.add(rs.getString(2));
+				row.add(rs.getString(3));
+				row.add(rs.getString(4));
+				row.add(rs.getString(5));
+				rows.add(row);
+			}
+			pstmt.close();
+			return rows;
+		} catch (SQLException e) {
+			System.out.println(e);
+		} finally {
+			DAC.connectionClose();
+		}
+		return null;
+	}
+
+	public static ArrayList<ArrayList<String>> getErrors(String query, String id) throws SQLException {
+		connectionOpen();
+		try {
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setString(1, id);
 			ResultSet rs = pstmt.executeQuery();
 
 			ArrayList<String> row = new ArrayList<String>();

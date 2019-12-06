@@ -35,7 +35,7 @@ public class User {
 		this.surName = surName;
 	}
 	
-	public void email(String email) {
+	public void setEmail(String email) {
 		this.email = email;
 	}
 	

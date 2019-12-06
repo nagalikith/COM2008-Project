@@ -1,3 +1,5 @@
+package classesTest;
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.HeadlessException;
@@ -599,6 +601,7 @@ public class gui_author extends JFrame {
 						JOptionPane.showInternalMessageDialog(null, "No Initial article");
 					} else {
 						textArea_select.setText("Article Details :" + rows.get(0));
+						
 					}
 				} catch (SQLException | IOException e1) {
 					// TODO Auto-generated catch block

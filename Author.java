@@ -1,3 +1,5 @@
+package classesTest;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,8 +34,8 @@ public class Author extends User {
 
 	public String mainAuthor(String id) throws SQLException {
 		DAC.connectionOpen();
-		String queryCheck = "SELECT * FROM submission WHERE email = ? AND id = \'" + id + "\' ;";
-		ArrayList<ArrayList<String>> rows = DAC.getArticle(queryCheck, this.getEmail());
+		String queryCheck = "SELECT * FROM submission WHERE email = ? AND id = ? ;";
+		ArrayList<ArrayList<String>> rows = DAC.getArticle(queryCheck, this.getEmail(), id);
 		return (rows.get(0)).get(4);
 	}
 
@@ -143,7 +145,7 @@ public class Author extends User {
 	}
 
 	public ArrayList<ArrayList<String>> checkFinalVerdict() throws SQLException {
-		String queryCheck = "SELECT * FROM review WHERE subid = ? AND status = 'Final' ;";
+		String queryCheck = "SELECT * FROM review WHERE subid = ? AND (status = 'FINAL' OR status = 'complete');";
 		ArrayList<ArrayList<String>> rows = DAC.getreview(queryCheck, subid);
 		return rows;
 
@@ -300,8 +302,8 @@ public class Author extends User {
 
 	public ArrayList<ArrayList<String>> checkResponse(String id) throws SQLException {
 		// responses to the reviews
-		String query = "select * from errors WHERE subid = ? AND role = ? AND answers is not null ";
-		return DAC.getErrors(query, id, "Reviewer");
+		String query = "select * from errors WHERE subid = ? AND answers is not null ";
+		return DAC.getErrors(query, id);
 
 	}
 }

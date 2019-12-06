@@ -1,3 +1,5 @@
+package classesTest;
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.HeadlessException;
@@ -414,12 +416,15 @@ public class gui_Reviewe extends JFrame {
 						textArea_select3.setText(null);
 						switchPanels(panel_select3);
 						data = reviewer.showArticleForSelection();
+						System.out.println(data);
 						ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
 						for (ArrayList<String> dataset : data) {
 							if (reviewer.uniAffliation(reviewer.getUniAffiliation(), dataset.get(0))) {
 								rows.add(dataset);
 							}
 						}
+						System.out.println(reviewer.getUniAffiliation());
+						System.out.println(rows);
 						if (rows.size() >= 3) {
 							int count = 1;
 							for (ArrayList<String> list : rows) {
