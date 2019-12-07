@@ -89,7 +89,7 @@ public class DAC {
 			PreparedStatement pstmt = con.prepareStatement(query);
 			pstmt.setString(1, email);
 			rs = pstmt.executeQuery();
-			if (rs.next() == false) {
+			if (rs.next() == false) {//when no entry
 				return true;
 			} else {
 				return false;
@@ -272,6 +272,7 @@ public class DAC {
 				row.add(rs.getString("email"));
 				row.add(rs.getString("mainauthor"));
 				row.add(rs.getString("status"));
+				row.add(rs.getString("journal"));
 				rows.add(row);
 			}
 			pstmt.close();
@@ -397,7 +398,7 @@ public class DAC {
 		}
 	}
 
-	public static void adderror(String query, String revid, String subid, ArrayList<String> errors, String role)
+	public static void adderror(String query, String revid, String subid, ArrayList<String> errors)
 			throws SQLException {
 		// TODO Auto-generated method stub
 		connectionOpen();
@@ -410,7 +411,6 @@ public class DAC {
 				pstmt.setString(2, subid);
 				pstmt.setString(3, error);
 				pstmt.setInt(4, count);
-				pstmt.setString(5, role);
 				pstmt.executeUpdate();
 				count++;
 			}

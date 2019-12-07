@@ -117,33 +117,6 @@ public class Editor extends User {
 		return bool;
 	}
 	
-	/*public void selectJournal(String email,String journalInput) throws NoSuchAlgorithmException, SQLException {
-		Scanner sc = new Scanner(System.in);
-		
-		boolean bool = isChief(email,journalInput);
-		ArrayList<String> journalList = getJournalList();
-		
-        System.out.print("choose one journal to take actions ");
-        System.out.println(journalList.toString());
-        
-		//System.out.print("Enter Journal Name");
-		//String journal = sc.nextLine();
-		
-		if(bool) {
-			//give three options
-		}
-		else {
-			//give only valid options
-			if (journalList.contains(journalInput) == false) {
-				System.out.println("not valid journal");
-
-			} else {
-				journal = journalInput;
-			}
-		}
-		sc.close();
-		
-	}*/
 	
 	public String register(String title, String firstname, String lastname, String email,String password, String uni) throws NoSuchAlgorithmException, SQLException {
 		String out = "";
@@ -160,8 +133,8 @@ public class Editor extends User {
 			else {out = "already an editor for the journal " + journal;}
 		} else {
 			out = "added";
-			login.loginNew(title, firstname, lastname, email, password, uni);
-			//login.addrolls(role, email);
+			welcome_screen.loginNew(title, firstname, lastname, email, password, uni);
+			welcome_screen.addroll("Editor", email);
 			addEditor(email,journal,chiefEditor);
 		}
 		
@@ -303,7 +276,7 @@ public class Editor extends User {
 			
 			rs.next();
 			int n = rs.getInt(1);
-
+			System.out.println(""+n);
 			if (n>1) {
 				//check if email is chief
 				String queryCheck = "SELECT chiefeditor FROM editor WHERE email = ? AND journal = ?";
@@ -320,6 +293,29 @@ public class Editor extends User {
 				pstmt1.setString(1, getEmail());
 				pstmt1.setString(2, journal);
 				pstmt1.executeUpdate();
+				
+				//delete the email from roles if count roles = 1
+				String checkNum = "SELECT COUNT(*) FROM roles WHERE user = ?";
+				String delRoleU = "DELETE FROM user WHERE email = ?";
+				String delRoleR = "DELETE FROM roles WHERE user = ?";
+				PreparedStatement pstmtd = DAC.getCon().prepareStatement(checkNum);
+				pstmtd.setString(1, getEmail());
+				PreparedStatement pstmtdelU = DAC.getCon().prepareStatement(delRoleU);
+				pstmtdelU.setString(1, getEmail());
+				PreparedStatement pstmtdelR = DAC.getCon().prepareStatement(delRoleR);
+				pstmtdelR.setString(1, getEmail());
+				
+				ResultSet rsd = pstmtd.executeQuery();
+				rsd.next();
+				int numd = rsd.getInt(1);
+				if(numd ==1) {
+					pstmtdelR.executeUpdate();
+					pstmtdelU.executeUpdate();
+					System.out.println("deleting from user and roles");
+				}
+				else {
+					System.out.println("not deleting from user and roles");
+				}
 				
 				if(chief) {
 				//make the next person chief editor
@@ -511,6 +507,7 @@ public class Editor extends User {
 		}
 	}
 	
+
 	public void addIntoCurrentEdition(ArrayList<String> acceptedId) throws SQLException {
 		
 		DAC.connectionOpen();
@@ -598,27 +595,26 @@ public class Editor extends User {
 		//the chief editor may publish the next edition of the journal when it is ready, thereby making
 		//all the contained articles available to readers
 		DAC.connectionOpen();
-		Scanner sc = new Scanner(System.in);
 		
 		try {
-			String getEditions = "SELECT * FROM currentedition"; //list of article ID
+			String getEditions = "SELECT * FROM currentedition"; //list of article ID and their journal name
 			PreparedStatement pstmt = DAC.getCon().prepareStatement(getEditions);
 			ResultSet rs = pstmt.executeQuery();
 			
-			String getEditionNum = "SELECT MAX(editionnum) FROM edition";
+			String getEditionNum = "SELECT MAX(editionnum) FROM edition WHERE journal = ?";
 			PreparedStatement pstmt2 = DAC.getCon().prepareStatement(getEditionNum);
-			ResultSet rs2 = pstmt2.executeQuery();
-			rs2.next();
-			int editionNum = rs2.getInt(1);
 			
 			String insert = "INSERT INTO edition (articleid, editionnum, journal) VALUES(?,?)";
 			PreparedStatement pstmt3 = DAC.getCon().prepareStatement(insert);
 			
 			while(rs.next()) {
 				String articleId = rs.getString(1); //iterates over all the article IDs and inserts them into edition
+				String journal = rs.getString(2);
+				pstmt2.setString(1, journal);
+				ResultSet rs2 = pstmt2.executeQuery();
+				rs2.next();
+				int editionNum = rs2.getInt(1);
 				
-				System.out.println("choose journal for "+articleId);
-				String journal = sc.nextLine();
 				pstmt3.setString(1, articleId);
 				pstmt3.setInt(2, editionNum);
 				pstmt3.setString(3, journal);
@@ -626,12 +622,11 @@ public class Editor extends User {
 			}
 		}
 		catch(SQLException e) {
-			System.out.println("delayarticle" + e);
+			System.out.println("publish next" + e);
 		}
 		finally {
 			DAC.connectionClose();
-		}
-		sc.close();		
+		}		
 	}
 	
 	public String getVerdicts(String id) throws SQLException {
@@ -680,4 +675,5 @@ public class Editor extends User {
 		
 		return title;
 	}
+	
 }

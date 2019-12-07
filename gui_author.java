@@ -393,6 +393,7 @@ public class gui_author extends JFrame {
 						if (data.size() >= 3) {
 							for (ArrayList<String> rows : data) {
 								for (String row : rows) {
+									answer = new ArrayList<String>();
 									System.out.println(row);
 									value = JOptionPane.showInputDialog(row);
 									answer.add(value);
@@ -480,11 +481,11 @@ public class gui_author extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (auth.mainAuthor(auth.getsubID()).compareTo("1") == 0) {
-						JFileChooser fc = new JFileChooser();
-						fc.setCurrentDirectory(new java.io.File("."));
-						fc.showOpenDialog(null);
 						try {
 							if (auth.checkFinalarticle(auth.getsubID())) {
+								JFileChooser fc = new JFileChooser();
+								fc.setCurrentDirectory(new java.io.File("."));
+								fc.showOpenDialog(null);
 								auth.submitRevisedArticle(fc.getSelectedFile().getAbsolutePath());
 								JOptionPane.showMessageDialog(null, "Final Article Submitted");
 							} else {

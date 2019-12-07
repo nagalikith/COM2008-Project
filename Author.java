@@ -52,7 +52,7 @@ public class Author extends User {
 		data.add(journal);
 		DAC.publish(query, data);
 		query = "INSERT INTO roles VALUES (?,?);";
-		login.addroll("Reviewer", getEmail());
+		welcome_screen.addroll("Reviewer", getEmail());
 	}
 
 	public void registerCoAuthor(String title, String firstname, String lastname, String email, String password,
@@ -62,8 +62,8 @@ public class Author extends User {
 		// article;
 		String queryCheck = "SELECT * FROM user WHERE email = ? ;";
 		if (DAC.checkEmail(queryCheck, email)) {
-			login.loginNew(title, firstname, lastname, email, password, uni);
-			login.addroll("Author", email);
+			welcome_screen.loginNew(title, firstname, lastname, email, password, uni);
+			welcome_screen.addroll("Author", email);
 			addCoAuthor(email);
 		} else {
 			System.out.println("Invalid Email");
@@ -79,7 +79,7 @@ public class Author extends User {
 		try {
 			data = (rows.get(0));
 			data.set(3, email);
-			String query = "INSERT INTO submission(id, title, abstract, email, mainauthor, status) VALUES (?,?,?,?,FALSE,?);";
+			String query = "INSERT INTO submission(id, title, abstract, email, mainauthor, status , journal) VALUES (?,?,?,?,FALSE,?,?);";
 			DAC.connectionOpen();
 			PreparedStatement pstmt = null;
 			try {
@@ -90,6 +90,7 @@ public class Author extends User {
 				pstmt.setString(3, data.get(2));
 				pstmt.setString(4, data.get(3));
 				pstmt.setString(5, data.get(5));
+				pstmt.setString(6, data.get(6));
 				pstmt.executeUpdate();
 			} catch (SQLException ex) {
 				System.out.println(ex);

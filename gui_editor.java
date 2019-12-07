@@ -149,9 +149,9 @@ public class gui_editor extends JFrame {
 						}
 					}
 					else {
-						list.add("journal1");
-						list.add("journal2");
-						list.add("journal3");
+						list.add("Journal of Computer Science");
+						list.add("Journal of Software Engineering");
+						list.add("Journal of Artificial Intelligence");
 						for(int i=0; i<list.size(); i++) {
 							output = output + (i+1) +". "+ list.get(i) +"\n";
 						}
@@ -440,7 +440,12 @@ public class gui_editor extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				//publish edition
 				//add from current edition to edition
-				
+				try {
+					editorObj.publishNextEdition();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		btnPublishEdition.setBounds(60, 264, 120, 25);
@@ -486,6 +491,7 @@ public class gui_editor extends JFrame {
 			public void actionPerformed(ActionEvent e) {			
 				//accept, reject, next
 				//get list of [list of id] and [[list of title]]
+				textArea_article.setText(null);
 				ArrayList<String> acceptedId = new ArrayList<String>();
 				ArrayList<String> usedId = new ArrayList<String>();
 				
@@ -514,7 +520,6 @@ public class gui_editor extends JFrame {
 						
 						String line = id+" "+title + " " + verdict;
 						
-						//textArea_article.append(line+"\n");
 						
 						int n = JOptionPane.showOptionDialog(null, 
 								"ArticleId : "+id+"\n"

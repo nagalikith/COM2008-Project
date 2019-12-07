@@ -64,11 +64,13 @@ public class Reviewers extends User {
 	public ArrayList<ArrayList<String>> showArticleForSelection() throws SQLException {
 		String queryCheck = "SELECT * FROM submission WHERE email <> ? AND mainauthor = TRUE AND status = 'Submission' ;";
 		ArrayList<ArrayList<String>> rows = DAC.getArticle(queryCheck, this.getEmail());
+		System.out.println("rows:" + rows);
 		return rows;
 
 	}
 	public boolean uniAffliation(String uni , String id) throws SQLException {
-		String query = "select submission.id ,user.uni from submission,user where submission.email = user.email AND id = ? ; ";
+		DAC.connectionOpen();
+		String query = "select submission.id ,user.uni from submission,user where submission.email = user.email AND id = ? ";
 		try {
 			PreparedStatement pstmt = DAC.getCon().prepareStatement(query);
 			pstmt.setString(1, id);
@@ -77,9 +79,11 @@ public class Reviewers extends User {
 			ArrayList<String> row = new ArrayList<String>();
 
 			while (rs.next()) {
-				row = new ArrayList<String>();
-				row.add(rs.getString("uni"));
+				row.add(rs.getString(2));
+				System.out.println(rs.getString(2));
 			}
+			System.out.println(row);
+			
 			if (row.contains(uni)) {
 				return false;
 			} else {
@@ -88,6 +92,8 @@ public class Reviewers extends User {
 			
 		}catch (Exception e) {
 			// TODO: handle exception
+		}finally {
+			DAC.connectionClose();
 		}
 		return false;
 		
@@ -98,9 +104,9 @@ public class Reviewers extends User {
 		String revid = generateHash(getEmail());
 		String queryrev = "UPDATE review " + "set summary = ? , typos = ? , judgement = ? , status = ? "
 				+ "where revid = ? AND subid = ?";
-		String queryerror = "INSERT INTO errors(revid, subid, question,count,role) VALUES (?,?,?,?,?);";
+		String queryerror = "INSERT INTO errors(revid, subid, question,count) VALUES (?,?,?,?);";
 		DAC.addinitialsub(queryrev,revid, sum, typo, judgement, "Initial", subid);
-		DAC.adderror(queryerror, revid, subid, questions, "Reviewer");
+		DAC.adderror(queryerror, revid, subid, questions);
 
 	}
 
@@ -111,7 +117,7 @@ public class Reviewers extends User {
 		
 		checkFinal();
 	}
-
+	
 	public boolean checkInitialreview(String id) throws SQLException, NoSuchAlgorithmException {
 		String queryCheck = "SELECT * FROM review WHERE subid = ? AND revid = ? AND status = 'Initial' ;";
 		ArrayList<ArrayList<String>> rows = DAC.checkreview(queryCheck,id,generateHash(this.getEmail()));
@@ -168,7 +174,7 @@ public class Reviewers extends User {
 			String insert = "INSERT INTO reviewedarticle VALUES(?)";
 			PreparedStatement ptsmt2 = DAC.getCon().prepareStatement(insert);
 			
-			String update = "UPDATE review SET status = 'complete' WHERE subid = ?";
+			String update = "UPDATE review SET status = 'complete' WHERE subid = ? AND status = 'FINAL'";
 			PreparedStatement ptsmt3 = DAC.getCon().prepareStatement(update);
 
 			while(rs.next()) {

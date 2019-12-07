@@ -21,6 +21,7 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.Color;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -359,6 +360,8 @@ public class gui_Reviewe extends JFrame {
 		btnSubmit_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				questions.add(txtrquestion.getText());
+				txtrquestion.setText(null);
+				JOptionPane.showMessageDialog(null, "Question added");
 			}
 		});
 		btnSubmit_2.setBounds(375, 283, 128, 42);
@@ -416,7 +419,7 @@ public class gui_Reviewe extends JFrame {
 						textArea_select3.setText(null);
 						switchPanels(panel_select3);
 						data = reviewer.showArticleForSelection();
-						System.out.println(data);
+						System.out.println("*"+data);
 						ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
 						for (ArrayList<String> dataset : data) {
 							if (reviewer.uniAffliation(reviewer.getUniAffiliation(), dataset.get(0))) {
@@ -542,7 +545,7 @@ public class gui_Reviewe extends JFrame {
 					} else {
 						for (ArrayList<String> row : rows) {
 							textArea_choice3.append("Question: " + row.get(2) + "\n");
-							textArea_choice3.append("Question: " + row.get(3) + "\n");
+							textArea_choice3.append("Answer: " + row.get(3) + "\n");
 						}
 						check = true;
 					}
@@ -554,5 +557,40 @@ public class gui_Reviewe extends JFrame {
 		});
 		button_4.setBounds(175, 88, 148, 43);
 		panel_choice.add(button_4);
+		
+		JButton btnInitialArticle = new JButton("Initial Article");
+		btnInitialArticle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String querypdf = "SELECT pdf FROM submission WHERE id = ? AND status = 'Submission' AND mainauthor = TRUE ;";
+				try {
+					DAC.getpdf(querypdf, reviewer.getsubID());
+					JOptionPane.showMessageDialog(null, "Initial Article Downloaded");
+				} catch (SQLException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnInitialArticle.setBounds(0, 144, 148, 43);
+		panel_choice.add(btnInitialArticle);
+		
+		JButton btnFinalArticle = new JButton("Final Article");
+		btnFinalArticle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					String querypdf = "SELECT pdf FROM revised WHERE subid = ?";
+					if (DAC.getpdf(querypdf, reviewer.getsubID())) {
+						JOptionPane.showMessageDialog(null, "Final Article Downloaded");
+					} else {
+						JOptionPane.showMessageDialog(null, "No Final Article");
+					}
+				} catch (SQLException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnFinalArticle.setBounds(354, 144, 148, 43);
+		panel_choice.add(btnFinalArticle);
 	}
 }
