@@ -1,5 +1,8 @@
 package classesTest;
 
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -35,7 +38,7 @@ public class User {
 		this.surName = surName;
 	}
 	
-	public void setEmail(String email) {
+	public void email(String email) {
 		this.email = email;
 	}
 	
@@ -65,9 +68,9 @@ public class User {
 	}
 	
 	//rest of the functions
-	public void changePassword(String password) throws SQLException {
+	public void changePassword(String password) throws SQLException, NoSuchAlgorithmException {
 		String query = "UPDATE user SET password = ? WHERE email = ?;";
-		DAC.changePassword(query, password, this.email);
+		DAC.changePassword(query, generateHash(password), this.email);
 	}
 	
 	
@@ -78,6 +81,23 @@ public class User {
 		User obj = new User(user.get(0), user.get(1), user.get(2), user.get(3), user.get(4), user.get(5));
 		
 		return obj;
+	}
+	
+	private static String generateHash(String passowrd) throws NoSuchAlgorithmException {
+		MessageDigest digest = MessageDigest.getInstance("SHA-256");
+		digest.reset();
+		byte[] hash = digest.digest(passowrd.getBytes());
+		return toHex(hash);
+	}
+
+	private static String toHex(byte[] hashInBytes) {
+
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < hashInBytes.length; i++) {
+			sb.append(Integer.toString((hashInBytes[i] & 0xff) + 0x100, 16).substring(1));
+		}
+		return sb.toString();
+
 	}
 	
 }

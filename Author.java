@@ -1,6 +1,5 @@
 package classesTest;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -175,7 +174,6 @@ public class Author extends User {
 		}
 
 	}
-	
 
 	public ArrayList<ArrayList<String>> criticismQuestions(String subId) throws SQLException {
 		DAC.connectionOpen();
@@ -288,15 +286,14 @@ public class Author extends User {
 		}
 	}
 
-
 	public ArrayList<ArrayList<String>> checkReview(String revid) throws SQLException {
 		String query = "select * from errors WHERE subid = ? AND revid = ? ";
 		return DAC.getErrors(query, subid, revid);
 
 	}
-	
+
 	public static boolean checkFinalarticle(String id) throws SQLException {
-		String query = "select id from revised WHERE subid = ?";
+		String query = "select subid from revised WHERE subid = ?";
 		return DAC.checkEmail(query, id);
 
 	}

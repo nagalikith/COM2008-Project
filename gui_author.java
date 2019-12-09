@@ -118,7 +118,7 @@ public class gui_author extends JFrame {
 		lblRole.setBounds(0, 58, 193, 36);
 		contentPane.add(lblRole);
 
-		lblUsername.setText(auth.getEmail().toUpperCase());
+		lblUsername.setText(auth.getFirstName().toUpperCase());
 
 		JButton btnLogOut = new JButton("Log Out");
 		btnLogOut.addActionListener(new ActionListener() {
@@ -179,8 +179,6 @@ public class gui_author extends JFrame {
 		lblPdf.setBounds(28, 278, 71, 33);
 		panel_submit.add(lblPdf);
 
-
-
 		JButton button_2 = new JButton("Browse");
 		button_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -197,12 +195,13 @@ public class gui_author extends JFrame {
 		textField_pdf.setColumns(10);
 		textField_pdf.setBounds(240, 284, 231, 20);
 		panel_submit.add(textField_pdf);
-		
+
 		JComboBox comboBox_J = new JComboBox();
-		comboBox_J.setModel(new DefaultComboBoxModel(new String[] {"Journal of Computer Science", "Journal of Software Engineering", "Journal of Artificial Intelligence"}));
+		comboBox_J.setModel(new DefaultComboBoxModel(new String[] { "Journal of Computer Science",
+				"Journal of Software Engineering", "Journal of Artificial Intelligence" }));
 		comboBox_J.setBounds(98, 209, 179, 33);
 		panel_submit.add(comboBox_J);
-		
+
 		JLabel lblJournal = new JLabel("Journal");
 		lblJournal.setHorizontalAlignment(SwingConstants.CENTER);
 		lblJournal.setBounds(38, 209, 61, 33);
@@ -392,8 +391,8 @@ public class gui_author extends JFrame {
 						data = auth.criticismQuestions(auth.getsubID());
 						if (data.size() >= 3) {
 							for (ArrayList<String> rows : data) {
+								answer = new ArrayList<String>();
 								for (String row : rows) {
-									answer = new ArrayList<String>();
 									System.out.println(row);
 									value = JOptionPane.showInputDialog(row);
 									answer.add(value);
@@ -469,6 +468,18 @@ public class gui_author extends JFrame {
 		panel_select.add(btnSelectArticle);
 
 		JButton btnChangePassword = new JButton("Change Password");
+		btnChangePassword.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String password = JOptionPane.showInputDialog("Type The new password");
+				try {
+					auth.changePassword(password);
+					JOptionPane.showMessageDialog(null, "Password changed");
+				} catch (NoSuchAlgorithmException | SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 		btnChangePassword.setBounds(40, 118, 122, 36);
 		panel_select.add(btnChangePassword);
 
@@ -482,20 +493,23 @@ public class gui_author extends JFrame {
 				try {
 					if (auth.mainAuthor(auth.getsubID()).compareTo("1") == 0) {
 						try {
-							if (auth.checkFinalarticle(auth.getsubID())) {
+							String query = "SELECT * FROM review WHERE subid = ? AND status = 'Initial' ;";
+							System.out.println(DAC.checkEmail(query, auth.getsubID()));
+							if (auth.checkFinalarticle(auth.getsubID())
+									&& (DAC.checkEmail(query, auth.getsubID()) == false)) {
 								JFileChooser fc = new JFileChooser();
 								fc.setCurrentDirectory(new java.io.File("."));
 								fc.showOpenDialog(null);
 								auth.submitRevisedArticle(fc.getSelectedFile().getAbsolutePath());
 								JOptionPane.showMessageDialog(null, "Final Article Submitted");
 							} else {
-								JOptionPane.showMessageDialog(null, "Final Already Article submitted");
+								JOptionPane.showMessageDialog(null, "Can't submit final article ");
 							}
 						} catch (FileNotFoundException | SQLException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-						
+
 					} else {
 						JOptionPane.showMessageDialog(null, "Main Author only");
 					}
@@ -602,7 +616,7 @@ public class gui_author extends JFrame {
 						JOptionPane.showInternalMessageDialog(null, "No Initial article");
 					} else {
 						textArea_select.setText("Article Details :" + rows.get(0));
-						
+
 					}
 				} catch (SQLException | IOException e1) {
 					// TODO Auto-generated catch block
@@ -657,12 +671,12 @@ public class gui_author extends JFrame {
 		});
 		btnNewButton_2.setBounds(353, 122, 134, 23);
 		panel_selected.add(btnNewButton_2);
-		
+
 		JLabel lblMainAuthor = new JLabel("Main Author");
 		lblMainAuthor.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMainAuthor.setBounds(0, 58, 134, 19);
 		panel_selected.add(lblMainAuthor);
-		
+
 		JButton button = new JButton("SubmitArticle");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -671,7 +685,7 @@ public class gui_author extends JFrame {
 				String pdf = textField_pdf.getText();
 				String journal = (String) comboBox_J.getItemAt(comboBox_J.getSelectedIndex());
 				try {
-					auth.submitArticle(title, abst, pdf,journal);
+					auth.submitArticle(title, abst, pdf, journal);
 					JOptionPane.showMessageDialog(null, "ARTICLE SUBMITTED");
 				} catch (NoSuchAlgorithmException | SQLException e1) {
 					// TODO Auto-generated catch block

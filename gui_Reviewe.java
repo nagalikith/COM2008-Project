@@ -112,6 +112,18 @@ public class gui_Reviewe extends JFrame {
 		panel.add(panel_1);
 
 		JButton btnChangePassword = new JButton("Change password");
+		btnChangePassword.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					String password = JOptionPane.showInputDialog("Type The new password");
+					reviewer.changePassword(password);
+					JOptionPane.showMessageDialog(null, "Password changed");
+				} catch (NoSuchAlgorithmException | SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		btnChangePassword.setBounds(40, 114, 122, 44);
 		panel_1.add(btnChangePassword);
 
@@ -419,10 +431,11 @@ public class gui_Reviewe extends JFrame {
 						textArea_select3.setText(null);
 						switchPanels(panel_select3);
 						data = reviewer.showArticleForSelection();
-						System.out.println("*"+data);
+						System.out.println("* " + data);
 						ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
 						for (ArrayList<String> dataset : data) {
-							if (reviewer.uniAffliation(reviewer.getUniAffiliation(), dataset.get(0))) {
+							if (reviewer.uniAffliation(reviewer.getUniAffiliation(), dataset.get(0))
+									&& reviewer.checkArticleCount(reviewer.getsubID())) {
 								rows.add(dataset);
 							}
 						}
@@ -557,7 +570,7 @@ public class gui_Reviewe extends JFrame {
 		});
 		button_4.setBounds(175, 88, 148, 43);
 		panel_choice.add(button_4);
-		
+
 		JButton btnInitialArticle = new JButton("Initial Article");
 		btnInitialArticle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -573,7 +586,7 @@ public class gui_Reviewe extends JFrame {
 		});
 		btnInitialArticle.setBounds(0, 144, 148, 43);
 		panel_choice.add(btnInitialArticle);
-		
+
 		JButton btnFinalArticle = new JButton("Final Article");
 		btnFinalArticle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

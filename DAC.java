@@ -61,7 +61,7 @@ public class DAC {
 
 	public static void connectionOpen() throws SQLException {
 		try {
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/testdb", "root", "sonal9999");
+			con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team034", "team034", "cb31aaf5");
 		} catch (SQLException ex) {
 			connectionClose();
 		}
@@ -89,7 +89,7 @@ public class DAC {
 			PreparedStatement pstmt = con.prepareStatement(query);
 			pstmt.setString(1, email);
 			rs = pstmt.executeQuery();
-			if (rs.next() == false) {//when no entry
+			if (rs.next() == false) {// when no entry
 				return true;
 			} else {
 				return false;

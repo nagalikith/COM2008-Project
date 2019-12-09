@@ -1,6 +1,5 @@
 package classesTest;
 
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
@@ -17,21 +16,20 @@ public class Reviewers extends User {
 		super(t, fn, sn, e, p, u);
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public static String getsubID() {
-		return subid ;
-		
+		return subid;
+
 	}
 
 	public ArrayList<ArrayList<String>> viewArticle() throws SQLException, NoSuchAlgorithmException {
-		String queryCheck = "SELECT * FROM review WHERE revid = ? ;";
+		String queryCheck = "SELECT * FROM review WHERE revid = ? AND (status = 'Initial' OR status is null) ;";
 		ArrayList<ArrayList<String>> rows = DAC.getreview(queryCheck, generateHash(this.getEmail()));
 		return rows;
 
-
 	}
-	
-	public void setSubId(ArrayList<ArrayList<String>> rows , String choice) {
+
+	public void setSubId(ArrayList<ArrayList<String>> rows, String choice) {
 		ArrayList<String> data = new ArrayList<String>();
 		data = (rows.get(Integer.parseInt(choice) - 1));
 		subid = data.get(1);
@@ -39,7 +37,7 @@ public class Reviewers extends User {
 
 	public boolean articleCheck() throws SQLException, NoSuchAlgorithmException {
 		String queryCheck = "SELECT * FROM review WHERE revid = ? ;";
-		if (DAC.checkEmail(queryCheck , generateHash(getEmail()))) {
+		if (DAC.checkEmail(queryCheck, generateHash(getEmail()))) {
 			return true;
 		}
 		return false;
@@ -68,7 +66,8 @@ public class Reviewers extends User {
 		return rows;
 
 	}
-	public boolean uniAffliation(String uni , String id) throws SQLException {
+
+	public boolean uniAffliation(String uni, String id) throws SQLException {
 		DAC.connectionOpen();
 		String query = "select submission.id ,user.uni from submission,user where submission.email = user.email AND id = ? ";
 		try {
@@ -83,44 +82,46 @@ public class Reviewers extends User {
 				System.out.println(rs.getString(2));
 			}
 			System.out.println(row);
-			
+
 			if (row.contains(uni)) {
 				return false;
 			} else {
 				return true;
 			}
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			// TODO: handle exception
-		}finally {
+		} finally {
 			DAC.connectionClose();
 		}
 		return false;
-		
+
 	}
 
-	public void submitInitialVerdict(String sum, String typo,String judgement , ArrayList<String> questions)
+	public void submitInitialVerdict(String sum, String typo, String judgement, ArrayList<String> questions)
 			throws SQLException, NoSuchAlgorithmException {
 		String revid = generateHash(getEmail());
 		String queryrev = "UPDATE review " + "set summary = ? , typos = ? , judgement = ? , status = ? "
 				+ "where revid = ? AND subid = ?";
 		String queryerror = "INSERT INTO errors(revid, subid, question,count) VALUES (?,?,?,?);";
-		DAC.addinitialsub(queryrev,revid, sum, typo, judgement, "Initial", subid);
+		DAC.addinitialsub(queryrev, revid, sum, typo, judgement, "Initial", subid);
 		DAC.adderror(queryerror, revid, subid, questions);
 
 	}
 
-	public void submitFinalVerdict(String sum, String typo,String judgement) throws NoSuchAlgorithmException, SQLException {
+	public void submitFinalVerdict(String sum, String typo, String judgement)
+			throws NoSuchAlgorithmException, SQLException {
 		String revid = generateHash(getEmail());
 		String queryrev = "INSERT INTO review(revid,subid,summary,typos,judgement,status) VALUES (?,?,?,?,?,?);";
 		DAC.addFinalSub(queryrev, revid, subid, sum, typo, judgement, "FINAL");
-		
+
 		checkFinal();
+		removeRole();
 	}
-	
+
 	public boolean checkInitialreview(String id) throws SQLException, NoSuchAlgorithmException {
 		String queryCheck = "SELECT * FROM review WHERE subid = ? AND revid = ? AND status = 'Initial' ;";
-		ArrayList<ArrayList<String>> rows = DAC.checkreview(queryCheck,id,generateHash(this.getEmail()));
+		ArrayList<ArrayList<String>> rows = DAC.checkreview(queryCheck, id, generateHash(this.getEmail()));
 		System.out.println(rows);
 		if (rows.isEmpty()) {
 			return false;
@@ -128,9 +129,10 @@ public class Reviewers extends User {
 			return true;
 		}
 	}
+
 	public boolean checkSubmission(String id) throws SQLException, NoSuchAlgorithmException {
 		String queryCheck = "SELECT * FROM review WHERE subid = ? AND revid = ? AND status IS NULL ;";
-		ArrayList<ArrayList<String>> rows = DAC.checkreview(queryCheck,id,generateHash(this.getEmail()));
+		ArrayList<ArrayList<String>> rows = DAC.checkreview(queryCheck, id, generateHash(this.getEmail()));
 		System.out.println(id);
 		if (rows.isEmpty()) {
 			return false;
@@ -138,11 +140,71 @@ public class Reviewers extends User {
 			return true;
 		}
 	}
-	
+
 	public ArrayList<ArrayList<String>> checkResponse(String id) throws SQLException, NoSuchAlgorithmException {
 		// responses to the reviews
 		String query = "select * from errors WHERE subid = ? AND revid = ? AND answers is not null ";
 		return DAC.getErrors(query, id, generateHash(this.getEmail()));
+
+	}
+
+	public void removeRole() throws SQLException, NoSuchAlgorithmException {
+		// responses to the reviews
+		DAC.connectionOpen();
+		try {
+			String query = "select COUNT(*) from review WHERE revid = ? AND (status = 'Final' OR status = 'complete')";
+			PreparedStatement pstmt = DAC.getCon().prepareStatement(query);
+			pstmt.setString(1, generateHash(getEmail()));
+
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+			int check = rs.getInt(1);
+			System.out.println("Count: "+check);
+			if (check == 3) {
+				query = "DELETE FROM roles where (user = ? and role = 'Reviewer')";
+				PreparedStatement pstmt2 = DAC.getCon().prepareStatement(query);
+				pstmt2.setString(1, getEmail());
+				pstmt2.executeUpdate();
+				pstmt2.close();
+			}
+			pstmt.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Error");
+		} finally {
+			DAC.connectionClose();
+
+		}
+
+	}
+	
+	public boolean checkArticleCount(String id) throws SQLException {
+		// responses to the reviews
+		DAC.connectionOpen();
+		try {
+			String query = "select COUNT(*) from review WHERE revid = ? AND (status = 'Initial' OR status is null)";
+			PreparedStatement pstmt = DAC.getCon().prepareStatement(query);
+			pstmt.setString(1, generateHash(getEmail()));
+
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+			int check = rs.getInt(1);
+			System.out.println("Count: "+check);
+			if (check > 3) {
+				pstmt.close();
+				return false;
+			} else {
+				pstmt.close();
+				return true;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Error");
+		} finally {
+			DAC.connectionClose();
+
+		}
+		return false;
 
 	}
 
@@ -162,39 +224,36 @@ public class Reviewers extends User {
 		return sb.toString();
 
 	}
-	
+
 	public static void checkFinal() throws SQLException {
 		DAC.connectionOpen();
-		
+
 		try {
 			String query = "SELECT subid,COUNT(subid) FROM review WHERE status = 'FINAL' GROUP BY subid";
 			PreparedStatement ptsmt = DAC.getCon().prepareStatement(query);
 			ResultSet rs = ptsmt.executeQuery();
-			
+
 			String insert = "INSERT INTO reviewedarticle VALUES(?)";
 			PreparedStatement ptsmt2 = DAC.getCon().prepareStatement(insert);
-			
+
 			String update = "UPDATE review SET status = 'complete' WHERE subid = ? AND status = 'FINAL'";
 			PreparedStatement ptsmt3 = DAC.getCon().prepareStatement(update);
 
-			while(rs.next()) {
-				if(rs.getInt(2) == 3) {
-					
+			while (rs.next()) {
+				if (rs.getInt(2) == 3) {
+
 					String subId = rs.getString(1);
-					
+
 					ptsmt2.setString(1, subId);
 					ptsmt3.setString(1, subId);
 					ptsmt2.executeUpdate();
 					ptsmt3.executeUpdate();
 				}
 			}
-			
-			
-		}
-		catch(SQLException e) {
-			System.out.println("checkFinal "+e);
-		}
-		finally {
+
+		} catch (SQLException e) {
+			System.out.println("checkFinal " + e);
+		} finally {
 			DAC.connectionClose();
 		}
 	}

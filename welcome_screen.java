@@ -267,9 +267,10 @@ public class welcome_screen extends JFrame {
 				String role = (String) comboBox_1.getItemAt(comboBox_1.getSelectedIndex());
 				String query = "SELECT * FROM user WHERE email = ? ;";
 				try {
-					if (DAC.checkEmail(query , email)) {
+					if (DAC.checkEmail(query, email)) {
 						loginNew(title, firstname, lastname, email, password, uni);
 						addroll(role, email);
+						JOptionPane.showMessageDialog(null, "Thank you for signing up");
 					} else {
 						// System.out.println("Invalid Email");
 						JOptionPane.showMessageDialog(null, "Invalid Email");
@@ -315,7 +316,7 @@ public class welcome_screen extends JFrame {
 			return false;
 		} else {
 			String pass = generateHash(passowrd);
-			boolean check = DAC.checkUser(query, username ,pass);
+			boolean check = DAC.checkUser(query, username, pass);
 			if (check == false) {
 				JOptionPane.showMessageDialog(null, "Wrong Password");
 			}
